@@ -39,4 +39,12 @@ public class DifficultQuestionService {
 
         return new DifficultQuestionDto(difficultQuestion);
     }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void removeDifficultQuestion(int difficultQuestionId) {
+        DifficultQuestion difficultQuestion = difficultQuestionRepository.findById(difficultQuestionId).orElseThrow(() -> new TutorException(DIFFICULT_QUESTION_NOT_FOUND, difficultQuestionId));
+
+        difficultQuestion.remove();
+        difficultQuestionRepository.delete(difficultQuestion);
+    }
 }
