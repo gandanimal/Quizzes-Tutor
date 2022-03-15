@@ -46,6 +46,7 @@ public class DifficultQuestion implements DomainEntity {
         setRemoved(false);
         setQuestion(question);
         setDashboard(dashboard);
+
     }
 
     public void remove() {
