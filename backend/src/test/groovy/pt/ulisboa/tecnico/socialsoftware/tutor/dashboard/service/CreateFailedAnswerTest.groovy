@@ -17,19 +17,19 @@ class CreateFailedAnswerTest extends SpockTest {
 
     }
 
-    def "create a failed answer(FA)"() {
+    def "create a failed answer"() {
 
     }
 
-    def "cannot create FA if course execution is different in dashboard and question answer"() {
+    def "cannot create failed answer if course execution is different in dashboard and question answer"() {
 
     }
 
-    def "cannot create FA if student is different in dashboard and question answer"() {
+    def "cannot create failed answer if student is different in dashboard and question answer"() {
 
     }
 
-    def "cannot create FA if answer is correct"() {
+    def "cannot create failed answer if answer is correct"() {
 
     }
 
@@ -37,7 +37,8 @@ class CreateFailedAnswerTest extends SpockTest {
 
     }
 
-    def "create 2 FAs for the same question, both have each other in same question parameter"() {
+    def "create 2 failed answers for the same question, both have each other in same question parameter"() {
 
     }
+
 }
