@@ -52,4 +52,23 @@ public class WeeklyScoreService {
     return new WeeklyScoreDto(weeklyScore);
   }
 
+  @Transactional(isolation = Isolation.READ_COMMITTED)
+  public void removeWeeklyScore(Integer weeklyScoreId){
+    if (weeklyScoreId == null) {
+      throw new TutorException(WEEKLY_SCORE_NOT_FOUND);
+    }
+    WeeklyScore weekScore = weeklyScoreRepository.findbyId(weeklyScoreId)
+            .orElseThrow()-> new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScoreId)
+
+    TemporalAdjuster weekSun = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
+    LocalDate currentWeek = DateHandler.now().with(weekSun).toLocalDate();
+
+    if (weekScore.getWeek().isEqual(currentWeek)) {
+      throw new TutorException(CANNOT_REMOVE_WEEKLY_SCORE);
+    }
+
+    weekScore.remove();
+    weeklyScoreRepository.delete(weekScore);
+  }
+
 }

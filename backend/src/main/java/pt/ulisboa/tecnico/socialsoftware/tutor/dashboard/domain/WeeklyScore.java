@@ -83,6 +83,8 @@ public class WeeklyScore implements DomainEntity {
     }
 
     public void remove() {
+        this.dashboard.getWeeklyScores().remove(this);
+        this.dashboard = null;
     }
 
     @Override
