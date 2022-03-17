@@ -70,8 +70,26 @@ class RemoveWeeklyScoreTest extends SpockTest {
         weeklyScoreRepository.count() == 1
     }
 
-    def "Remove Weekly Score with same percentage"(){
+    def "Remove Weekly Score with same percentage (0%)"(){
+        given:
+        TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
+        LocalDate week = DateHandler.now().minusDays(30).with(weekSunday).toLocalDate();
+        WeeklyScore weeklyScore1 = new WeeklyScore(dashboard, week)
+        weeklyScoreRepository.save(weeklyScore1)
+        WeeklyScore weeklyScore2 = new WeeklyScore(dashboard, week)
+        weeklyScoreRepository.save(weeklyScore2)
 
+        when:
+        weekScoreService.removeWeeklyScore(weeklyScore2.getId())
+
+        then:
+        weeklyScoreRepository.count() == 1
+        samePercentageRepository.count() == 1
+        and:
+        def weeklyScore = weeklyScoreRepository.getById(weeklyScore1.getId())
+        weeklyScore.getSamePercentage().getWeeklyScores().size() == 0
+        def samePercentage = samePercentageRepository.getById(weeklyScore.getSamePercentage.getId())
+        samePercentage.getWeeklyScores().size() == 0
     }
 
     @Unroll
