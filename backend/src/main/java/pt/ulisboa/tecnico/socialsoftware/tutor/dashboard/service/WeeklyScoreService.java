@@ -34,41 +34,41 @@ public class WeeklyScoreService {
   @Autowired
   private DashboardRepository dashboardRepository;
 
-  @Transactional(isolation = Isolation.READ_COMMITTED)
+  @Transactional(isolation = Isolation.READ_COMMITTED) //avoids dirty reads
   public WeeklyScoreDto createWeeklyScore(Integer dashboardId) {
-    if (dashboardId == null) {
+    if (dashboardId == null) { //if dashboard id is not assigned throw an error
       throw new TutorException(DASHBOARD_NOT_FOUND);
     }
 
-    Dashboard dashboard = dashboardRepository.findById(dashboardId)
-            .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
+    Dashboard dashboard = dashboardRepository.findById(dashboardId)  //get dashboard from the repository
+            .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId)); //throw error if id not found in repository
 
-    TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
-    LocalDate week = DateHandler.now().with(weekSunday).toLocalDate();
+    TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY); //define date as last Sunday to create a current week instance
+    LocalDate week = DateHandler.now().with(weekSunday).toLocalDate(); //convert to local date
 
-    WeeklyScore weeklyScore = new WeeklyScore(dashboard, week);
-    weeklyScoreRepository.save(weeklyScore);
+    WeeklyScore weeklyScore = new WeeklyScore(dashboard, week); //create new Weekly score
+    weeklyScoreRepository.save(weeklyScore); //save in repository
 
     return new WeeklyScoreDto(weeklyScore);
   }
 
-  @Transactional(isolation = Isolation.READ_COMMITTED)
+  @Transactional(isolation = Isolation.READ_COMMITTED) //avoids dirty reads
   public void removeWeeklyScore(Integer weeklyScoreId){
-    if (weeklyScoreId == null) {
+    if (weeklyScoreId == null) { //if weekly score id is not assigned throw an error
       throw new TutorException(WEEKLY_SCORE_NOT_FOUND);
     }
-    WeeklyScore weekScore = weeklyScoreRepository.findbyId(weeklyScoreId)
-            .orElseThrow()-> new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScoreId)
+    WeeklyScore weekScore = weeklyScoreRepository.findById(weeklyScoreId)  //get weekly score from the repository
+            .orElseThrow()-> new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScoreId); //throw error if weekly score ID was not found in repository
 
-    TemporalAdjuster weekSun = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
-    LocalDate currentWeek = DateHandler.now().with(weekSun).toLocalDate();
+    TemporalAdjuster weekSun = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY); //define date as last Sunday to create a current week instance
+    LocalDate currentWeek = DateHandler.now().with(weekSun).toLocalDate(); //convert to Local Date
 
-    if (weekScore.getWeek().isEqual(currentWeek)) {
+    if (weekScore.getWeek().isEqual(currentWeek)) { //if weekly score being removed was created in the current week it cannot be removed
       throw new TutorException(CANNOT_REMOVE_WEEKLY_SCORE);
     }
 
-    weekScore.remove();
-    weeklyScoreRepository.delete(weekScore);
+    weekScore.remove(); //delete weekly score from dashboard
+    weeklyScoreRepository.delete(weekScore); //delete weekly score from repository
   }
 
 }
