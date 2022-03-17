@@ -58,7 +58,7 @@ public class WeeklyScoreService {
       throw new TutorException(WEEKLY_SCORE_NOT_FOUND);
     }
     WeeklyScore weekScore = weeklyScoreRepository.findById(weeklyScoreId)  //get weekly score from the repository
-            .orElseThrow()-> new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScoreId); //throw error if weekly score ID was not found in repository
+            .orElseThrow(()-> new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScoreId)); //throw error if weekly score ID was not found in repository
 
     TemporalAdjuster weekSun = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY); //define date as last Sunday to create a current week instance
     LocalDate currentWeek = DateHandler.now().with(weekSun).toLocalDate(); //convert to Local Date

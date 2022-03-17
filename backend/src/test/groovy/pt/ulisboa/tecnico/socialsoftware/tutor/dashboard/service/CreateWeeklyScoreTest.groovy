@@ -31,7 +31,11 @@ class CreateWeeklyScoreTest extends SpockTest {
 
     }
 
+    @Unroll
     def "Cannot create WeeklyScore with invalid dashboard=#dashboardId"(){
 
     }
+
+    @TestConfiguration
+    static class LocalBeanConfiguration extends BeanConfiguration {}
 }

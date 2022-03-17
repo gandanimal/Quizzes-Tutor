@@ -156,7 +156,9 @@ public enum ErrorMessage {
     WEEKLY_SCORE_ALREADY_CREATED("Weekly Score already created for this week"),
     WEEKLY_SCORE_NOT_FOUND("Weekly Score not found: %d"),
     UPDATE_WEEKLY_SCORE_NOT_POSSIBLE("Impossible to update old Weekly Score: %s"),
-    CANNOT_REMOVE_WEEKLY_SCORE("Cannnot remove Weekly Score from the current week");
+    CANNOT_REMOVE_WEEKLY_SCORE("Cannot remove Weekly Score from the current week"),
+    CANNOT_ADD_SELF_TO_SAME_PERCENTAGE("Weekly Score cannot add itself to its own Same Percentage"),
+    WEEKLY_SCORE_ALREADY_ADDED("Weekly Score already added to same percentage");
 
 
 
