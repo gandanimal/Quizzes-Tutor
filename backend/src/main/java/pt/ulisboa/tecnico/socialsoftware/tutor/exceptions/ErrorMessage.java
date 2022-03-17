@@ -158,7 +158,9 @@ public enum ErrorMessage {
     UPDATE_WEEKLY_SCORE_NOT_POSSIBLE("Impossible to update old Weekly Score: %s"),
     CANNOT_REMOVE_WEEKLY_SCORE("Cannot remove Weekly Score from the current week"),
     CANNOT_ADD_SELF_TO_SAME_PERCENTAGE("Weekly Score cannot add itself to its own Same Percentage"),
-    WEEKLY_SCORE_ALREADY_ADDED("Weekly Score already added to same percentage");
+    WEEKLY_SCORE_ALREADY_ADDED("Weekly Score already added to same percentage"),
+    CANOT_REMOVE_SELF_FROM_SAME_PERCENTAGE("Weekly score cannot remove itself from its own Same Percentage"),
+    WEEKLY_SCORE_NOT_FOUND_SAME_PERCENTAGE("Same percentage could not find Weekly Score: %d");
 
 
 
