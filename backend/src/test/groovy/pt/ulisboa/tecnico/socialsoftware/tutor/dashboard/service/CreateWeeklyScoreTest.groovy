@@ -58,8 +58,8 @@ class CreateWeeklyScoreTest extends SpockTest {
         samePercentageRepository.count() == 2L    //check if they were added to repository
         weeklyscore1.getSamePercentage().getOriginWeeklyScore == weeklyscore1 //check if weeklyscore in samepercentage is correctly assigned
         weeklyscore2.getSamePercentage().getOriginWeeklyScore == weeklyscore2
-        weeklyscore1.getSamePercentage().getWeeklyScores(0) == weeklyscore2 //check if weeklyscore list in samepercentage points to the other weeklyscore
-        weeklyscore2.getSamePercentage().getWeeklyScores(0) == weeklyscore1
+        weeklyscore1.getSamePercentage().getWeeklyScores().get(0) == weeklyscore2 //check if weeklyscore list in samepercentage points to the other weeklyscore
+        weeklyscore2.getSamePercentage().getWeeklyScores().get(0) == weeklyscore1
         samePercentageRepository.findAll().get(0) == weeklyscore1 //check if repository has correctly stored the weeklyscores
         samePercentageRepository.findAll().get(1) == weeklyscore2
     }
