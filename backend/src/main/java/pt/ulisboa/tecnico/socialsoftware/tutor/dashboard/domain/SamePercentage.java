@@ -71,16 +71,16 @@ public class SamePercentage implements DomainEntity {
         if (weeklyScore.getId().equals(originWeeklyScore.getId())){ //check if weekly score given is the same as current instance
             throw new TutorException(CANNOT_ADD_SELF_TO_SAME_PERCENTAGE);
         }
-        if (weeklyScores.stream().noneMatch(weeklyScore1 -> weeklyScore1.getId().equals(weeklyScore.getId()))){
+        if (weeklyScores.stream().noneMatch(weeklyScore1 -> weeklyScore1.getId().equals(weeklyScore.getId()))){  //check if weekly score given is in the weeklyscores hash set
             throw new TutorException(WEEKLY_SCORE_NOT_FOUND_SAME_PERCENTAGE, weeklyScore.getId());
         }
-        weeklyScores.remove(weeklyScore);
+        weeklyScores.remove(weeklyScore); //remove weekly score from weeklyscores hash set
     }
 
     public void accept(Visitor visitor) {
     }
     public void remove(){
-        for( WeeklyScore w : weeklyScores){
+        for( WeeklyScore w : weeklyScores){  //go through weekly scores hash set and remove the original weekly score of the instance
             w.getSamePercentage().removeWeeklyScore(originWeeklyScore);
         }
         originWeeklyScore.setSamePercentage(null); //remove same percentage from weeklyscore
