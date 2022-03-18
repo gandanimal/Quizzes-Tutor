@@ -76,8 +76,8 @@ class CreateWeeklyScoreTest extends SpockTest {
         weeklyScore2.getSamePercentage().getOriginWeeklyScore() == weeklyScore2
         weeklyScore1.getSamePercentage().getWeeklyScores().getAt(0) == weeklyScore2 //check if weeklyScore list in samepercentage points to the other weeklyScore
         weeklyScore2.getSamePercentage().getWeeklyScores().getAt(0) == weeklyScore1
-        samePercentageRepository.findAll().get(0) == weeklyScore1.getSamePercentage() //check if repository has correctly stored the weeklyScores
-        samePercentageRepository.findAll().get(1) == weeklyScore2.getSamePercentage()
+        samePercentageRepository.findAll().get(1) == weeklyScore1.getSamePercentage() //check if repository has correctly stored the weeklyScores
+        samePercentageRepository.findAll().get(0) == weeklyScore2.getSamePercentage()
     }
 
     def "Cannot create multiple WeeklyScore for the same week"(){
