@@ -8,12 +8,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 
 import javax.persistence.*;
 
 @Entity
 public class DifficultQuestion implements DomainEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -29,6 +29,12 @@ public class DifficultQuestion implements DomainEntity {
 
     @ManyToOne
     private Dashboard dashboard;
+
+    @ManyToOne
+    private SameDifficulty samedifficulty1;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private SameDifficulty samedifficulty;
 
     public DifficultQuestion(){
     }
@@ -46,7 +52,7 @@ public class DifficultQuestion implements DomainEntity {
         setRemoved(false);
         setQuestion(question);
         setDashboard(dashboard);
-
+        setSameDifficulty();
     }
 
     public void remove() {
@@ -67,6 +73,24 @@ public class DifficultQuestion implements DomainEntity {
     public void setDashboard(Dashboard dashboard) {
         this.dashboard = dashboard;
         this.dashboard.addDifficultQuestion(this);
+    }
+
+
+    public SameDifficulty getSameDifficulty (){
+        return samedifficulty;
+    }
+
+    public void setSameDifficulty() {
+        this.samedifficulty = new SameDifficulty(this);
+        Iterator <DifficultQuestion> dq = dashboard.getDifficultQuestions().iterator();
+        DifficultQuestion difficultQuestion1;
+        while (dq.hasNext()){
+            difficultQuestion1 = dq.next(); 
+            if (difficultQuestion1.getQuestion() != this.getQuestion() && difficultQuestion1.getPercentage() == this.getPercentage()){
+                this.getSameDifficulty().addDifficultQuestion(difficultQuestion1);
+                difficultQuestion1.getSameDifficulty().addDifficultQuestion(this);
+            }
+        }
     }
 
     public Integer getId() {
@@ -123,5 +147,4 @@ public class DifficultQuestion implements DomainEntity {
                 ", question=" + question +
                 "}";
     }
-
 }
