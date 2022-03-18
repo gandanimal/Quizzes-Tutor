@@ -12,6 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.AuthUserService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DashboardService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.WeeklyScoreService
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DifficultQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.DiscussionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.AssessmentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.CourseExecutionService
@@ -25,6 +26,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.FailedAnswerService
 
 @TestConfiguration
 @PropertySource("classpath:application-test.properties")
@@ -127,6 +129,16 @@ class BeanConfiguration {
     @Bean
     DashboardService dashboardService() {
         return new DashboardService()
+    }
+    
+    @Bean
+    DifficultQuestionService difficultQuestionService() {
+        return new DifficultQuestionService()
+    }
+
+    @Bean
+    FailedAnswerService failedAnswerService() {
+        return new FailedAnswerService()
     }
 
     @Bean
