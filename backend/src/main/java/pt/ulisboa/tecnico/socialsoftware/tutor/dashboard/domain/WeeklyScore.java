@@ -57,9 +57,8 @@ public class WeeklyScore implements DomainEntity {
                 }
             }
 
-            setWeek(week);
-            setDashboard(dashboard);
-        }
+        setWeek(week);
+        setDashboard(dashboard);
     }
 
     public Integer getId() { return id; }
