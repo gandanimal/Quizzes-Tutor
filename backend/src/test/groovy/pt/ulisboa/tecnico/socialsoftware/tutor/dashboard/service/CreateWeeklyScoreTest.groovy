@@ -67,15 +67,15 @@ class CreateWeeklyScoreTest extends SpockTest {
         then:
         weeklyScoreRepository.count() == 2L
         def weeklyScore2 = weeklyScoreRepository.findAll().get(1)
-        def weeklyScore1 = weeklyScoreRepository.findall().get(0)
+        def weeklyScore1 = weeklyScoreRepository.findAll().get(0)
         weeklyScore1.getSamePercentage().getId() != null //check if samePercentage were created
         weeklyScore2.getSamePercentage().getId() != null
         weeklyScore1.getPercentageCorrect() == weeklyScore2.getPercentageCorrect() //check if percentage is the same in both
         samePercentageRepository.count() == 2L    //check if they were added to repository
-        weeklyScore1.getSamePercentage().getOriginWeeklyScore == weeklyScore1 //check if weeklyScore in samepercentage is correctly assigned
-        weeklyScore2.getSamePercentage().getOriginWeeklyScore == weeklyScore2
-        weeklyScore1.getSamePercentage().getWeeklyScores().get(0) == weeklyScore2 //check if weeklyScore list in samepercentage points to the other weeklyScore
-        weeklyScore2.getSamePercentage().getWeeklyScores().get(0) == weeklyScore1
+        weeklyScore1.getSamePercentage().getOriginWeeklyScore() == weeklyScore1 //check if weeklyScore in samepercentage is correctly assigned
+        weeklyScore2.getSamePercentage().getOriginWeeklyScore() == weeklyScore2
+        weeklyScore1.getSamePercentage().getWeeklyScores().getAt(0) == weeklyScore2 //check if weeklyScore list in samepercentage points to the other weeklyScore
+        weeklyScore2.getSamePercentage().getWeeklyScores().getAt(0) == weeklyScore1
         samePercentageRepository.findAll().get(0) == weeklyScore1.getSamePercentage() //check if repository has correctly stored the weeklyScores
         samePercentageRepository.findAll().get(1) == weeklyScore2.getSamePercentage()
     }

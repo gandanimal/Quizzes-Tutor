@@ -39,7 +39,7 @@ public class WeeklyScore implements DomainEntity {
     @ManyToOne
     private Dashboard dashboard;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private SamePercentage samePercentage;
 
     public WeeklyScore() {}
