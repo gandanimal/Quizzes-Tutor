@@ -88,7 +88,7 @@ class RemoveWeeklyScoreTest extends SpockTest {
 
 
         when:
-        weekScoreService.removeWeeklyScore(weeklyScore2.getId())
+        weeklyScoreService.removeWeeklyScore(weeklyScore2.getId())
 
         then:
         weeklyScoreRepository.count() == 1

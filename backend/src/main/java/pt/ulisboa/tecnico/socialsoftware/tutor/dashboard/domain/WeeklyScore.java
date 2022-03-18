@@ -56,9 +56,10 @@ public class WeeklyScore implements DomainEntity {
                     w.getSamePercentage().addWeeklyScore(this);
                 }
             }
+            setWeek(week);
+            setDashboard(dashboard);
+        }
 
-        setWeek(week);
-        setDashboard(dashboard);
     }
 
     public Integer getId() { return id; }
