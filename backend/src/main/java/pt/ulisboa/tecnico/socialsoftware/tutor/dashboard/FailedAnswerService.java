@@ -48,6 +48,17 @@ public class FailedAnswerService {
     private QuestionAnswerRepository questionAnswerRepository;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    public FailedAnswerDto createFailedAnswer(int dashboardId, int questionAnswerId) {
+        Dashboard dashboard = dashboardRepository.findById(dashboardId).orElseThrow(() -> new TutorException(ErrorMessage.DASHBOARD_NOT_FOUND, dashboardId));
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(QUESTION_ANSWER_NOT_FOUND, questionAnswerId));
+
+        FailedAnswer failedAnswer = new FailedAnswer(dashboard, questionAnswer, DateHandler.now());
+        failedAnswerRepository.save(failedAnswer);
+
+        return new FailedAnswerDto(failedAnswer);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void removeFailedAnswer(int failedAnswerId) {
         FailedAnswer toRemove = failedAnswerRepository.findById(failedAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.FAILED_ANSWER_NOT_FOUND, failedAnswerId));
         toRemove.remove();
