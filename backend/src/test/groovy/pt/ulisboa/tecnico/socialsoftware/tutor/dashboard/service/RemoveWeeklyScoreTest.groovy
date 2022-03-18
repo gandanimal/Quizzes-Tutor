@@ -77,20 +77,21 @@ class RemoveWeeklyScoreTest extends SpockTest {
         TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
         LocalDate week2 = DateHandler.now().minusDays(30).with(weekSunday).toLocalDate();
         LocalDate week = DateHandler.now().with(weekSunday).toLocalDate();
-        WeeklyScore weeklyScore1 = new WeeklyScore(dashboard, week)
+        def weeklyScore1 = new WeeklyScore(dashboard, week)
+        def weeklyScore2 = new WeeklyScore(dashboard, week2)
         weeklyScoreRepository.save(weeklyScore1)
-        WeeklyScore weeklyScore2 = new WeeklyScore(dashboard, week2)
         weeklyScoreRepository.save(weeklyScore2)
         SamePercentage samePercentage1 = new SamePercentage(weeklyScore1)
         SamePercentage samePercentage2 = new SamePercentage(weeklyScore2)
-        samePercentage1.addWeeklyScore(weeklyScore2)
-        samePercentage2.addWeeklyScore(weeklyScore1)
         samePercentageRepository.save(samePercentage1)
         samePercentageRepository.save(samePercentage2)
+        samePercentage1.addWeeklyScore(weeklyScore2)
+        samePercentage2.addWeeklyScore(weeklyScore1)
+        weeklyScore1.setSamePercentage(samePercentage1)
+        weeklyScore2.setSamePercentage(samePercentage2)
 
 
         when:
-        weeklyScore2.getId() != null
         weeklyScoreService.removeWeeklyScore(weeklyScore2.getId())
 
         then:
@@ -99,7 +100,7 @@ class RemoveWeeklyScoreTest extends SpockTest {
         and:
         def weeklyScore = weeklyScoreRepository.getById(weeklyScore1.getId())
         weeklyScore.getSamePercentage().getWeeklyScores().size() == 0
-        def samePercentage = samePercentageRepository.getById(weeklyScore.getSamePercentage.getId())
+        def samePercentage = samePercentageRepository.getById(weeklyScore.getSamePercentage().getId())
         samePercentage.getWeeklyScores().size() == 0
     }
 
