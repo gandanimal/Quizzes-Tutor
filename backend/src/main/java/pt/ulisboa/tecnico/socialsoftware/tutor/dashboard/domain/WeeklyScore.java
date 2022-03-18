@@ -45,20 +45,23 @@ public class WeeklyScore implements DomainEntity {
     public WeeklyScore() {}
 
     public WeeklyScore(Dashboard dashboard, LocalDate week) {
+        setWeek(week);
+        setDashboard(dashboard);
         if(dashboard.getWeeklyScores().size() != 0){  //if there are other weekly scores
             for(WeeklyScore w : dashboard.getWeeklyScores()){
-                if(w.getPercentageCorrect() == this.getPercentageCorrect()){ //check if there are other weekly scores with the same percentage
-                    if(w.getSamePercentage()==null){
-                        w.setSamePercentage(new SamePercentage(w)); //initiate samePercentage of the other weekly score (weeklyscore2) instance if it doesn't exist yet
+                if(!(w.getId().equals(this.getId()))){
+                    if(w.getPercentageCorrect() == this.getPercentageCorrect()){ //check if there are other weekly scores with the same percentage
+                        if(w.getSamePercentage()==null){
+                            w.setSamePercentage(new SamePercentage(w)); //initiate samePercentage of the other weekly score (weeklyscore2) instance if it doesn't exist yet
+                        }
+                        w.getSamePercentage().addWeeklyScore(this); //add weeklyscore1 to weeklyscore2's weekly score hash set
+                        setSamePercentage(new SamePercentage(this)); //initiate samePercentage for weeklyscore1
+                        getSamePercentage().addWeeklyScore(w); //add weeklyscore2 to weeklyscore1's weekly score hash set
                     }
-                    w.getSamePercentage().addWeeklyScore(this); //add weeklyscore1 to weeklyscore2's weekly score hash set
-                    setSamePercentage(new SamePercentage(this)); //initiate samePercentage for weeklyscore1
-                    getSamePercentage().addWeeklyScore(w); //add weeklyscore2 to weeklyscore1's weekly score hash set
                 }
             }
-            setWeek(week);
-            setDashboard(dashboard);
         }
+
 
     }
 
@@ -107,7 +110,9 @@ public class WeeklyScore implements DomainEntity {
     }
 
     public void remove() {
-        this.samePercentage.remove(); //remove samePercentage instance
+        if(samePercentage != null){
+            this.samePercentage.remove(); //remove samePercentage instance
+        }
         this.dashboard.getWeeklyScores().remove(this); //remove weekly score from dashboard
         this.dashboard = null; //reset dashboard variable
     }

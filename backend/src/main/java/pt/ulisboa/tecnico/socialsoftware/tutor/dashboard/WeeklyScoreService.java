@@ -39,6 +39,7 @@ public class WeeklyScoreService {
   private SamePercentageRepository samePercentageRepository;
 
   @Transactional(isolation = Isolation.READ_COMMITTED) //avoids dirty reads
+
   public WeeklyScoreDto createWeeklyScore(Integer dashboardId) {
     if (dashboardId == null) { //if dashboard id is not assigned throw an error
       throw new TutorException(DASHBOARD_NOT_FOUND);
@@ -52,7 +53,8 @@ public class WeeklyScoreService {
 
     WeeklyScore weeklyScore = new WeeklyScore(dashboard, week); //create new Weekly score
     weeklyScoreRepository.save(weeklyScore); //save in repository
-    samePercentageRepository.save(weeklyScore.getSamePercentage());
+    if(weeklyScore.getSamePercentage()!= null)
+      samePercentageRepository.save(weeklyScore.getSamePercentage());
 
 
     return new WeeklyScoreDto(weeklyScore);
@@ -72,7 +74,8 @@ public class WeeklyScoreService {
     if (weekScore.getWeek().isEqual(currentWeek)) { //if weekly score being removed was created in the current week it cannot be removed
       throw new TutorException(CANNOT_REMOVE_WEEKLY_SCORE);
     }
-    samePercentageRepository.delete(weekScore.getSamePercentage());
+    if(weekScore.getSamePercentage() != null)
+      samePercentageRepository.delete(weekScore.getSamePercentage());
     weekScore.remove(); //delete weekly score from dashboard
     weeklyScoreRepository.delete(weekScore); //delete weekly score from repository
   }
