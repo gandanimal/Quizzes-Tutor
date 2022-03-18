@@ -68,15 +68,15 @@ class RemoveWeeklyScoreTest extends SpockTest {
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.CANNOT_REMOVE_WEEKLY_SCORE
         and:
-        weeklyScoreRepository.count() == 1
+        weeklyScoreRepository.count() == 1L
     }
 
 
     def "Remove Weekly Score with same percentage (0%)"() {
         given:
         TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
-        LocalDate week = DateHandler.now().minusDays(30).with(weekSunday).toLocalDate();
-        LocalDate week2 = DateHandler.now().with(weekSunday).toLocalDate();
+        LocalDate week2 = DateHandler.now().minusDays(30).with(weekSunday).toLocalDate();
+        LocalDate week = DateHandler.now().with(weekSunday).toLocalDate();
         WeeklyScore weeklyScore1 = new WeeklyScore(dashboard, week)
         weeklyScoreRepository.save(weeklyScore1)
         WeeklyScore weeklyScore2 = new WeeklyScore(dashboard, week2)
@@ -90,11 +90,12 @@ class RemoveWeeklyScoreTest extends SpockTest {
 
 
         when:
+        weeklyScore2.getId() != null
         weeklyScoreService.removeWeeklyScore(weeklyScore2.getId())
 
         then:
-        weeklyScoreRepository.count() == 1
-        samePercentageRepository.count() == 1
+        samePercentageRepository.count() == 1L
+        weeklyScoreRepository.count() == 1L
         and:
         def weeklyScore = weeklyScoreRepository.getById(weeklyScore1.getId())
         weeklyScore.getSamePercentage().getWeeklyScores().size() == 0

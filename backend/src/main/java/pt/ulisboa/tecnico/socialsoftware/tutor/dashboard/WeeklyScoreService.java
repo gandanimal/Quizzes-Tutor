@@ -75,10 +75,11 @@ public class WeeklyScoreService {
     if (weekScore.getWeek().isEqual(currentWeek)) { //if weekly score being removed was created in the current week it cannot be removed
       throw new TutorException(CANNOT_REMOVE_WEEKLY_SCORE);
     }
+    weeklyScoreRepository.delete(weekScore); //delete weekly score from repository
     if(weekScore.getSamePercentage() != null)
       samePercentageRepository.delete(weekScore.getSamePercentage());
     weekScore.remove(); //delete weekly score from dashboard
-    weeklyScoreRepository.delete(weekScore); //delete weekly score from repository
+
   }
 
 }
