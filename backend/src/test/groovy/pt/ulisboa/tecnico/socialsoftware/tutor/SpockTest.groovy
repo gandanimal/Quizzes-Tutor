@@ -9,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.*
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.AuthUserService
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DashboardService
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.WeeklyScoreService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DifficultQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DifficultQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository
@@ -16,6 +17,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.FailedAnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.FailedAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.DiscussionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.repository.DiscussionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.SamePercentageRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.repository.ReplyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.AssessmentService
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.CourseExecutionService
@@ -265,6 +268,15 @@ class SpockTest extends Specification {
 
     @Autowired
     ReplyRepository replyRepository
+
+    @Autowired
+    WeeklyScoreRepository weeklyScoreRepository
+
+    @Autowired
+    SamePercentageRepository samePercentageRepository
+
+    @Autowired
+    WeeklyScoreService weeklyScoreService
 
     @Autowired
     DemoUtils demoUtils
