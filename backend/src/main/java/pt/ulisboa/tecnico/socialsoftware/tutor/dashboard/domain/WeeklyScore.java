@@ -45,6 +45,17 @@ public class WeeklyScore implements DomainEntity {
     public WeeklyScore() {}
 
     public WeeklyScore(Dashboard dashboard, LocalDate week) {
+        for(WeeklyScore w : dashboard.getWeeklyScores()){
+            if(w.getPercentageCorrect().isEqual(this.getPercentageCorrect())){
+                setSamePercentage(SamePercentage(this));
+                getSamePercentage().addWeeklyScore(w);
+                if(w.getSamePercentage()==null){
+                    w.setSamePercentage(SamePercentage(w));
+                }
+                w.getSamePercentage().addWeeklyScore(this);
+            }
+        }
+
         setWeek(week);
         setDashboard(dashboard);
     }
