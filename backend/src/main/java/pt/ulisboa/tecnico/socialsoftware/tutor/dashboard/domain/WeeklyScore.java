@@ -93,7 +93,7 @@ public class WeeklyScore implements DomainEntity {
     public void checkSamePercentage(){
         if(!dashboard.getWeeklyScores().isEmpty()){  //if there are other weekly scores
             for(WeeklyScore w : dashboard.getWeeklyScores()){
-                if(!(w.getId().equals(this.getId()))){ //check if it's not the same WeeklyScore
+                if((!Objects.equals(w.getId(), this.getId()))){ //check if it's not the same WeeklyScore
                     if(w.getPercentageCorrect() == this.getPercentageCorrect()){ //check if there are other weekly scores with the same percentage
                         if(w.getSamePercentage()==null){
                             w.setSamePercentage(new SamePercentage(w)); //initiate samePercentage of the other weekly score (weeklyscore2) instance if it doesn't exist yet

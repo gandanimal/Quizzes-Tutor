@@ -5,10 +5,17 @@ import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.Dashboard
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.WeeklyScore
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student
+import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler
 import spock.lang.Unroll
+
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.temporal.TemporalAdjuster
+import java.time.temporal.TemporalAdjusters
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.DASHBOARD_NOT_FOUND
 
@@ -44,33 +51,30 @@ class CreateWeeklyScoreTest extends SpockTest {
         dashboard.getWeeklyScores().contains(result)
     }
 
-    /*
+
     def "Create two WeeklyScores that have the Same Percentage of correct answers"(){
         given:
         def weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY) //define date as sunday
         def week = DateHandler.now().minusDays(30).with(weekSunday).toLocalDate() //define week as 30 days ago
-        def weeklyscore1 = new WeeklyScore(dashboard,week2)//create another weeklyscore with same percentagecorrect=0 on a different week
-        weeklyScoreRepository.save(weeklyscore1) //save in repository
-        weeklyscore1.checkSamePercentage() //create same percentage
-        samePercentageRepository.save(weeklyscore1.getSamePercentage()); //save to samepercentage repository
-       
+        def weeklyScore1 = new WeeklyScore(dashboard,week)//create another weeklyScore with same percentagecorrect=0 on a different week
+        weeklyScoreRepository.save(weeklyScore1) //save in repository
+
 
         when:
-         def weeklyscore2 = weeklyScoreService.createWeeklyScore(dashboard.getId()) //create weeklyscore
+         def weeklyScore2 = weeklyScoreService.createWeeklyScore(dashboard.getId()) //create weeklyScore
 
         then:
-        weeklyscore1.getSamePercentage().getId() != null //check if samePercentage were created
-        weeklyscore2.getSamePercentage().getId() != null
-        weeklyscore1.getPercentageCorrect() == weeklyscore2.getPercentageCorrect() //check if percentage is the same in both
+        weeklyScore1.getSamePercentage().getId() != null //check if samePercentage were created
+        weeklyScore2.getSamePercentage().getId() != null
+        weeklyScore1.getPercentageCorrect() == weeklyScore2.getPercentageCorrect() //check if percentage is the same in both
         samePercentageRepository.count() == 2L    //check if they were added to repository
-        weeklyscore1.getSamePercentage().getOriginWeeklyScore == weeklyscore1 //check if weeklyscore in samepercentage is correctly assigned
-        weeklyscore2.getSamePercentage().getOriginWeeklyScore == weeklyscore2
-        weeklyscore1.getSamePercentage().getWeeklyScores().get(0) == weeklyscore2 //check if weeklyscore list in samepercentage points to the other weeklyscore
-        weeklyscore2.getSamePercentage().getWeeklyScores().get(0) == weeklyscore1
-        samePercentageRepository.findAll().get(0) == weeklyscore1 //check if repository has correctly stored the weeklyscores
-        samePercentageRepository.findAll().get(1) == weeklyscore2
+        weeklyScore1.getSamePercentage().getOriginWeeklyScore == weeklyScore1 //check if weeklyScore in samepercentage is correctly assigned
+        weeklyScore2.getSamePercentage().getOriginWeeklyScore == weeklyScore2
+        weeklyScore1.getSamePercentage().getWeeklyScores().get(0) == weeklyScore2 //check if weeklyScore list in samepercentage points to the other weeklyScore
+        weeklyScore2.getSamePercentage().getWeeklyScores().get(0) == weeklyScore1
+        samePercentageRepository.findAll().get(0) == weeklyScore1.getSamePercentage() //check if repository has correctly stored the weeklyScores
+        samePercentageRepository.findAll().get(1) == weeklyScore2.getSamePercentage()
     }
-     */
 
     def "Cannot create multiple WeeklyScore for the same week"(){
 
