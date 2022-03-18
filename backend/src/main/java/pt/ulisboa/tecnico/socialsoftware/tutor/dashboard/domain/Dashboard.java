@@ -45,6 +45,10 @@ public class Dashboard implements DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
     private final List<FailedAnswer> failedAnswers = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
+    private Set<DifficultQuestion> difficultQuestions = new HashSet<>();
+
+
     public Dashboard() {
     }
 
@@ -55,6 +59,9 @@ public class Dashboard implements DomainEntity {
         setLastCheckWeeklyScores(currentDate);
         setCourseExecution(courseExecution);
         setStudent(student);
+
+        TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
+        LocalDate week = DateHandler.now().with(weekSunday).toLocalDate();
     }
 
     public Integer getId() {
@@ -102,8 +109,18 @@ public class Dashboard implements DomainEntity {
         this.student.addDashboard(this);
     }
 
+
     public List<FailedAnswer> getFailedAnswers() {
         return failedAnswers;
+    }
+
+    public Set<DifficultQuestion> getDifficultQuestions() {
+        return difficultQuestions;
+    }
+
+    public void setDifficultQuestions(Set<DifficultQuestion> difficultQuestions) {
+        this.difficultQuestions = difficultQuestions;
+
     }
 
     public void remove() {
@@ -121,6 +138,13 @@ public class Dashboard implements DomainEntity {
     public void accept(Visitor visitor) {
     }
 
+    public void addDifficultQuestion(DifficultQuestion difficultQuestion) {
+        if (difficultQuestions.stream()
+                .anyMatch(difficultQuestion1 -> difficultQuestion1.getQuestion() == difficultQuestion.getQuestion())) {
+            throw new TutorException(ErrorMessage.DIFFICULT_QUESTION_ALREADY_CREATED);
+        }
+        difficultQuestions.add(difficultQuestion);
+    }
     @Override
     public String toString() {
         return "Dashboard{" +

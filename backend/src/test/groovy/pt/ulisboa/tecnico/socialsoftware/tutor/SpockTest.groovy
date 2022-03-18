@@ -9,6 +9,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.*
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.AuthUserService
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.repository.AuthUserRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DashboardService
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DifficultQuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DifficultQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.FailedAnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.FailedAnswerRepository
@@ -161,6 +163,12 @@ class SpockTest extends Specification {
 
     @Autowired
     DashboardService dashboardService
+    
+    @Autowired
+    DifficultQuestionService difficultQuestionService
+
+    @Autowired
+    DifficultQuestionRepository difficultQuestionRepository
 
     @Autowired
     DashboardRepository dashboardRepository
