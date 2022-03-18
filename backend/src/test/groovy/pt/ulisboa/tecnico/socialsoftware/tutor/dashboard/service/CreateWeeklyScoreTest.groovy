@@ -44,13 +44,19 @@ class CreateWeeklyScoreTest extends SpockTest {
         dashboard.getWeeklyScores().contains(result)
     }
 
-    /*
+
     def "Create two WeeklyScores that have the Same Percentage of correct answers"(){
         given:
-        def weeklyscore1 = weeklyScoreService.createWeeklyScore(dashboard.getId()) //create weeklyscore, initiates percentagecorrect to 0
+        def weeklyscore1 = weeklyScoreService.createWeeklyScore(dashboard.getId()) //create weeklyscore
+        def weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY) //define date as sunday
+        def week = DateHandler.now().minusDays(30).with(weekSunday).toLocalDate() //define week as 30 days ago
+       
 
         when:
-        def weeklyscore2 = weeklyScoreService.createWeeklyScore(dashboard.getId()) //create another weeklyscore with same percentagecorrect=0
+        def weeklyscore2 = new WeeklyScore(dashboard,week2)//create another weeklyscore with same percentagecorrect=0 on a different week
+        weeklyScoreRepository.save(weeklyscore2) //save in repository
+        weeklyscore2.checkSamePercentage() //create same percentage
+        samePercentageRepository.save(weeklyscore2.getSamePercentage()); //save to samepercentage repository
 
         then:
         weeklyscore1.getSamePercentage().getId() != null //check if samePercentage were created
@@ -63,7 +69,7 @@ class CreateWeeklyScoreTest extends SpockTest {
         weeklyscore2.getSamePercentage().getWeeklyScores().get(0) == weeklyscore1
         samePercentageRepository.findAll().get(0) == weeklyscore1 //check if repository has correctly stored the weeklyscores
         samePercentageRepository.findAll().get(1) == weeklyscore2
-    } */
+    }
 
     def "Cannot create multiple WeeklyScore for the same week"(){
 
