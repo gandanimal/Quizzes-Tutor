@@ -52,8 +52,8 @@ public class WeeklyScoreService {
     LocalDate week = DateHandler.now().with(weekSunday).toLocalDate(); //convert to local date
 
     WeeklyScore weeklyScore = new WeeklyScore(dashboard, week); //create new Weekly score
-    weeklyScore.checkSamePercentage();
     weeklyScoreRepository.save(weeklyScore); //save in repository
+    weeklyScore.checkSamePercentage();
     if(weeklyScore.getSamePercentage()!= null)
       samePercentageRepository.save(weeklyScore.getSamePercentage());
 

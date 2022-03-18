@@ -56,14 +56,18 @@ class CreateWeeklyScoreTest extends SpockTest {
         given:
         def weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY) //define date as sunday
         def week = DateHandler.now().minusDays(30).with(weekSunday).toLocalDate() //define week as 30 days ago
-        def weeklyScore1 = new WeeklyScore(dashboard,week)//create another weeklyScore with same percentagecorrect=0 on a different week
-        weeklyScoreRepository.save(weeklyScore1) //save in repository
+        def weeklyScore3 = new WeeklyScore(dashboard,week)//create another weeklyScore with same percentagecorrect=0 on a different week
+        weeklyScoreRepository.save(weeklyScore3) //save in repository
+
 
 
         when:
-         def weeklyScore2 = weeklyScoreService.createWeeklyScore(dashboard.getId()) //create weeklyScore
+        weeklyScoreService.createWeeklyScore(dashboard.getId()) //create weeklyScore
 
         then:
+        weeklyScoreRepository.count() == 2L
+        def weeklyScore2 = weeklyScoreRepository.findAll().get(1)
+        def weeklyScore1 = weeklyScoreRepository.findall().get(0)
         weeklyScore1.getSamePercentage().getId() != null //check if samePercentage were created
         weeklyScore2.getSamePercentage().getId() != null
         weeklyScore1.getPercentageCorrect() == weeklyScore2.getPercentageCorrect() //check if percentage is the same in both

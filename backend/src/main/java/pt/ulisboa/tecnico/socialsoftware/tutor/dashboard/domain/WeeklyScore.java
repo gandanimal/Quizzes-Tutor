@@ -79,7 +79,7 @@ public class WeeklyScore implements DomainEntity {
 
     public void setDashboard(Dashboard dashboard) {
         this.dashboard = dashboard;
-        this.dashboard.addWeeklyScore(this);
+        dashboard.addWeeklyScore(this);
     }
 
     public SamePercentage getSamePercentage() {
@@ -93,14 +93,14 @@ public class WeeklyScore implements DomainEntity {
     public void checkSamePercentage(){
         if(!dashboard.getWeeklyScores().isEmpty()){  //if there are other weekly scores
             for(WeeklyScore w : dashboard.getWeeklyScores()){
-                if((!Objects.equals(w.getId(), this.getId()))){ //check if it's not the same WeeklyScore
+                if((!Objects.equals(w.getId(), id))){ //check if it's not the same WeeklyScore
                     if(w.getPercentageCorrect() == this.getPercentageCorrect()){ //check if there are other weekly scores with the same percentage
                         if(w.getSamePercentage()==null){
                             w.setSamePercentage(new SamePercentage(w)); //initiate samePercentage of the other weekly score (weeklyscore2) instance if it doesn't exist yet
                         }
                         w.getSamePercentage().addWeeklyScore(this); //add weeklyscore1 to weeklyscore2's weekly score hash set
                         setSamePercentage(new SamePercentage(this)); //initiate samePercentage for weeklyscore1
-                        getSamePercentage().addWeeklyScore(w); //add weeklyscore2 to weeklyscore1's weekly score hash set
+                        samePercentage.addWeeklyScore(w); //add weeklyscore2 to weeklyscore1's weekly score hash set
                     }
                 }
             }
@@ -114,8 +114,8 @@ public class WeeklyScore implements DomainEntity {
         if(samePercentage != null){
             this.samePercentage.remove(); //remove samePercentage instance
         }
-        this.dashboard.getWeeklyScores().remove(this); //remove weekly score from dashboard
-        this.dashboard = null; //reset dashboard variable
+        dashboard.getWeeklyScores().remove(this); //remove weekly score from dashboard
+        dashboard = null; //reset dashboard variable
     }
 
     @Override
