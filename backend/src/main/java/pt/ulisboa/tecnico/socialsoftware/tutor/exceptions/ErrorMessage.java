@@ -153,6 +153,16 @@ public enum ErrorMessage {
     FRAUD_SERVICE_NOT_AVAILABLE("Fraud service not available"),
     FRAUD_SERVICE_QUIZ_TYPE_NOT_SUPPORTED("Fraud service only supports timed, one way, in class quizzes"),
 
+  
+    WEEKLY_SCORE_ALREADY_CREATED("Weekly Score already created for this week"),
+    WEEKLY_SCORE_NOT_FOUND("Weekly Score not found: %d"),
+    UPDATE_WEEKLY_SCORE_NOT_POSSIBLE("Impossible to update old Weekly Score: %s"),
+    CANNOT_REMOVE_WEEKLY_SCORE("Cannot remove Weekly Score from the current week"),
+    CANNOT_ADD_SELF_TO_SAME_PERCENTAGE("Weekly Score cannot add itself to its own Same Percentage"),
+    WEEKLY_SCORE_ALREADY_ADDED("Weekly Score already added to same percentage"),
+    CANOT_REMOVE_SELF_FROM_SAME_PERCENTAGE("Weekly score cannot remove itself from its own Same Percentage"),
+    WEEKLY_SCORE_NOT_FOUND_SAME_PERCENTAGE("Same percentage could not find Weekly Score: %d"),
+
 
     FAILED_ANSWER_NOT_FOUND("Failed answer not found"),
     FAILED_ANSWER_MISSING_START_TIME("Failed answer filter requires the definition of the start date"),
