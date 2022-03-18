@@ -151,8 +151,12 @@ public enum ErrorMessage {
     WRONG_FORMAT_ON_CSV_LINE("Csv File has a wrong format on line: %d"),
     
     FRAUD_SERVICE_NOT_AVAILABLE("Fraud service not available"),
-    FRAUD_SERVICE_QUIZ_TYPE_NOT_SUPPORTED("Fraud service only supports timed, one way, in class quizzes");
+    FRAUD_SERVICE_QUIZ_TYPE_NOT_SUPPORTED("Fraud service only supports timed, one way, in class quizzes"),
 
+    DIFFICULT_QUESTION_NOT_FOUND("Difficult question not found"),
+    DIFFICULT_QUESTION_ALREADY_CREATED("Difficult question already created"),
+    CANNOT_CREATE_DIFFICULT_QUESTION("Cannot create difficult question"),
+    CANNOT_REMOVE_DIFFICULT_QUESTION("Cannot remove difficult question");
     
     public final String label;
     
