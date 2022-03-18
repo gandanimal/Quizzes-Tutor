@@ -25,6 +25,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserApplicationalService
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DemoUtils
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.Mailer
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.FailedAnswerService
 
 @TestConfiguration
 @PropertySource("classpath:application-test.properties")
@@ -132,6 +133,11 @@ class BeanConfiguration {
     @Bean
     DifficultQuestionService difficultQuestionService() {
         return new DifficultQuestionService()
+    }
+
+    @Bean
+    FailedAnswerService failedAnswerService() {
+        return new FailedAnswerService()
     }
 
     @Bean

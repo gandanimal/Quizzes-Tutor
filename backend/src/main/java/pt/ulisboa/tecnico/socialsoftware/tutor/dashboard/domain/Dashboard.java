@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "dashboard")
 public class Dashboard implements DomainEntity {
 
     @Id
@@ -42,7 +43,11 @@ public class Dashboard implements DomainEntity {
     private Student student;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
+    private final List<FailedAnswer> failedAnswers = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
     private Set<DifficultQuestion> difficultQuestions = new HashSet<>();
+
 
     public Dashboard() {
     }
@@ -104,17 +109,30 @@ public class Dashboard implements DomainEntity {
         this.student.addDashboard(this);
     }
 
+
+    public List<FailedAnswer> getFailedAnswers() {
+        return failedAnswers;
+    }
+
     public Set<DifficultQuestion> getDifficultQuestions() {
         return difficultQuestions;
     }
 
     public void setDifficultQuestions(Set<DifficultQuestion> difficultQuestions) {
         this.difficultQuestions = difficultQuestions;
+
     }
 
     public void remove() {
         student.getDashboards().remove(this);
         student = null;
+    }
+
+    public void addFailedAnswer(FailedAnswer failedAnswer) {
+        if (failedAnswers.stream().anyMatch(failedAnswer1 -> failedAnswer1.getQuestionAnswer() == failedAnswer.getQuestionAnswer())) {
+            throw new TutorException(ErrorMessage.FAILED_ANSWER_ALREADY_CREATED);
+        }
+        failedAnswers.add(failedAnswer);
     }
 
     public void accept(Visitor visitor) {
