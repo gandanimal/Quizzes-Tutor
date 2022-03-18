@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
@@ -9,6 +10,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Entity
 public class SamePercentage implements DomainEntity {
@@ -22,9 +25,6 @@ public class SamePercentage implements DomainEntity {
 
     @OneToOne
     private WeeklyScore originWeeklyScore;
-
-    @Autowired
-    private WeeklyScoreRepository weeklyScoreRepository;
 
     public SamePercentage(){
     }
@@ -55,11 +55,6 @@ public class SamePercentage implements DomainEntity {
         if (weeklyScore.getId() == null) { //if weekly score id is not assigned throw an error
             throw new TutorException(WEEKLY_SCORE_NOT_FOUND);
         }
-
-        if(!weeklyScoreRepository.exists(weeklyScore)){ //if weekly score isn't in repository
-            throw new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScore.getId());
-
-        }
         if (weeklyScore.getId().equals(originWeeklyScore.getId())){ //check if weekly score given is the same as current instance
             throw new TutorException(CANNOT_ADD_SELF_TO_SAME_PERCENTAGE);
         }
@@ -73,26 +68,22 @@ public class SamePercentage implements DomainEntity {
         if (weeklyScore.getId() == null) { //if weekly score id is not assigned throw an error
             throw new TutorException(WEEKLY_SCORE_NOT_FOUND);
         }
-
-        if(!weeklyScoreRepository.exists(weeklyScore)){ //if weekly score isn't in repository
-            throw new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScore.getId());
-
-        }
         if (weeklyScore.getId().equals(originWeeklyScore.getId())){ //check if weekly score given is the same as current instance
             throw new TutorException(CANNOT_ADD_SELF_TO_SAME_PERCENTAGE);
         }
-        if (!weeklyScores.stream().anyMatch(weeklyScore1 -> weeklyScore1.getId().equals(weeklyScore.getId()))){
+        if (weeklyScores.stream().noneMatch(weeklyScore1 -> weeklyScore1.getId().equals(weeklyScore.getId()))){
             throw new TutorException(WEEKLY_SCORE_NOT_FOUND_SAME_PERCENTAGE, weeklyScore.getId());
         }
-        weeklyScores.removeIf(weeklyScores.stream().anyMatch(weeklyScore1 -> weeklyScore1.getId().isEqual(weeklyScore)));
+        weeklyScores.remove(weeklyScore);
     }
 
     public void accept(Visitor visitor) {
     }
     public void remove(){
+        for( WeeklyScore w : weeklyScores){
+            w.getSamePercentage().removeWeeklyScore(originWeeklyScore);
+        }
         originWeeklyScore.setSamePercentage(null); //remove same percentage from weeklyscore
         originWeeklyScore = null; //reset weekly score in instance
-        
-
     }
 }

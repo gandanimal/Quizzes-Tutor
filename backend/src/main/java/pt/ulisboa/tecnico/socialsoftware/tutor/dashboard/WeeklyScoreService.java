@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.WeeklyScore;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.dto.WeeklyScoreDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.SamePercentageRepository;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
@@ -34,6 +35,9 @@ public class WeeklyScoreService {
   @Autowired
   private DashboardRepository dashboardRepository;
 
+  @Autowired
+  private SamePercentageRepository samePercentageRepository;
+
   @Transactional(isolation = Isolation.READ_COMMITTED) //avoids dirty reads
   public WeeklyScoreDto createWeeklyScore(Integer dashboardId) {
     if (dashboardId == null) { //if dashboard id is not assigned throw an error
@@ -48,6 +52,8 @@ public class WeeklyScoreService {
 
     WeeklyScore weeklyScore = new WeeklyScore(dashboard, week); //create new Weekly score
     weeklyScoreRepository.save(weeklyScore); //save in repository
+    samePercentageRepository.save(weeklyScore.getSamePercentage());
+
 
     return new WeeklyScoreDto(weeklyScore);
   }
@@ -66,7 +72,7 @@ public class WeeklyScoreService {
     if (weekScore.getWeek().isEqual(currentWeek)) { //if weekly score being removed was created in the current week it cannot be removed
       throw new TutorException(CANNOT_REMOVE_WEEKLY_SCORE);
     }
-
+    samePercentageRepository.delete(weekScore.getSamePercentage());
     weekScore.remove(); //delete weekly score from dashboard
     weeklyScoreRepository.delete(weekScore); //delete weekly score from repository
   }
