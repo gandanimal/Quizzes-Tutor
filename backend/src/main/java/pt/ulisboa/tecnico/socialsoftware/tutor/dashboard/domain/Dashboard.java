@@ -9,15 +9,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
 
 
 import javax.persistence.*;
@@ -43,11 +37,13 @@ public class Dashboard implements DomainEntity {
     private Student student;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
-    private final List<FailedAnswer> failedAnswers = new ArrayList<>();
+    private Set<WeeklyScore> weeklyScores = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
     private Set<DifficultQuestion> difficultQuestions = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
+    private Set<FailedAnswer> failedAnswers = new HashSet<>();
 
     public Dashboard() {
     }
@@ -59,9 +55,6 @@ public class Dashboard implements DomainEntity {
         setLastCheckWeeklyScores(currentDate);
         setCourseExecution(courseExecution);
         setStudent(student);
-
-        TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
-        LocalDate week = DateHandler.now().with(weekSunday).toLocalDate();
     }
 
     public Integer getId() {
@@ -109,23 +102,40 @@ public class Dashboard implements DomainEntity {
         this.student.addDashboard(this);
     }
 
-
-    public List<FailedAnswer> getFailedAnswers() {
-        return failedAnswers;
-    }
-
     public Set<DifficultQuestion> getDifficultQuestions() {
         return difficultQuestions;
     }
 
     public void setDifficultQuestions(Set<DifficultQuestion> difficultQuestions) {
         this.difficultQuestions = difficultQuestions;
+    }
 
+    public Set<FailedAnswer> getFailedAnswers() {
+        return failedAnswers;
     }
 
     public void remove() {
         student.getDashboards().remove(this);
         student = null;
+    }
+
+    public Set<WeeklyScore> getWeeklyScores() {
+        return weeklyScores;
+    }
+
+    public void addWeeklyScore(WeeklyScore weeklyScore) {
+        if (weeklyScores.stream().anyMatch(weeklyScore1 -> weeklyScore1.getWeek().isEqual(weeklyScore.getWeek()))) {
+            throw new TutorException(ErrorMessage.WEEKLY_SCORE_ALREADY_CREATED);
+        }
+        weeklyScores.add(weeklyScore);
+    }
+
+    public void addDifficultQuestion(DifficultQuestion difficultQuestion) {
+        if (difficultQuestions.stream()
+                .anyMatch(difficultQuestion1 -> difficultQuestion1.getQuestion() == difficultQuestion.getQuestion())) {
+            throw new TutorException(ErrorMessage.DIFFICULT_QUESTION_ALREADY_CREATED);
+        }
+        difficultQuestions.add(difficultQuestion);
     }
 
     public void addFailedAnswer(FailedAnswer failedAnswer) {
@@ -138,13 +148,6 @@ public class Dashboard implements DomainEntity {
     public void accept(Visitor visitor) {
     }
 
-    public void addDifficultQuestion(DifficultQuestion difficultQuestion) {
-        if (difficultQuestions.stream()
-                .anyMatch(difficultQuestion1 -> difficultQuestion1.getQuestion() == difficultQuestion.getQuestion())) {
-            throw new TutorException(ErrorMessage.DIFFICULT_QUESTION_ALREADY_CREATED);
-        }
-        difficultQuestions.add(difficultQuestion);
-    }
     @Override
     public String toString() {
         return "Dashboard{" +
@@ -154,4 +157,5 @@ public class Dashboard implements DomainEntity {
                 ", lastCheckDifficultAnswers=" + lastCheckDifficultQuestions +
                 "}";
     }
+
 }

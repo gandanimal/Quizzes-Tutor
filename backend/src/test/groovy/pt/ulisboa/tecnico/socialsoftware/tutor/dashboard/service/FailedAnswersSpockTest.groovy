@@ -4,7 +4,11 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceStatementAnswerDetailsDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementAnswerDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementQuizDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.FailedAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.SameQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.MultipleChoiceQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
@@ -18,10 +22,8 @@ class FailedAnswersSpockTest extends SpockTest {
 
     def dashboard
     def student
-    def quiz1
-    def quizQuestion1
-    def quiz2
-    def quizQuestion2
+    def question
+    def option
     def optionKO
 
     def createQuiz(count) {
@@ -36,7 +38,7 @@ class FailedAnswersSpockTest extends SpockTest {
     }
 
     def createQuestion(count, quiz) {
-        def question = new Question()
+        question = new Question()
         question.setKey(count)
         question.setTitle("Question Title")
         question.setCourse(externalCourse)
@@ -44,7 +46,7 @@ class FailedAnswersSpockTest extends SpockTest {
         question.setQuestionDetails(questionDetails)
         questionRepository.save(question)
 
-        def option = new Option()
+        option = new Option()
         option.setContent("Option Content")
         option.setCorrect(true)
         option.setSequence(0)
@@ -62,11 +64,15 @@ class FailedAnswersSpockTest extends SpockTest {
         return quizQuestion
     }
 
-    def answerQuiz(answered, correct, completed, question, quiz) {
+    def addExistingQuestionToQuiz(quiz, question=question) {
+        def quizQuestion = new QuizQuestion(quiz, question, 0)
+        quizQuestionRepository.save(quizQuestion)
+        return quizQuestion
+    }
+
+    def answerQuiz(answered, correct, completed, question, quiz, date = LocalDateTime.now()) {
         def quizAnswer = new QuizAnswer()
         quizAnswer.setCompleted(completed)
-        quizAnswer.setCreationDate(LocalDateTime.now())
-        quizAnswer.setAnswerDate(LocalDateTime.now())
         quizAnswer.setStudent(student)
         quizAnswer.setQuiz(quiz)
         quizAnswerRepository.save(quizAnswer)
@@ -75,28 +81,23 @@ class FailedAnswersSpockTest extends SpockTest {
         questionAnswer.setTimeTaken(1)
         questionAnswer.setQuizAnswer(quizAnswer)
         questionAnswer.setQuizQuestion(question)
+        questionAnswerRepository.save(questionAnswer)
 
         def answerDetails
-        if (answered && correct) answerDetails = new MultipleChoiceAnswer(questionAnswer, optionRepository.findAll().get(0))
-        else if (answered && !correct ) answerDetails = new MultipleChoiceAnswer(questionAnswer, optionRepository.findAll().get(1))
+        if (answered && correct) answerDetails = new MultipleChoiceAnswer(questionAnswer, option)
+        else if (answered && !correct ) answerDetails = new MultipleChoiceAnswer(questionAnswer, optionKO)
         else {
             questionAnswerRepository.save(questionAnswer)
             return questionAnswer
         }
         questionAnswer.setAnswerDetails(answerDetails)
         answerDetailsRepository.save(answerDetails)
-        questionAnswerRepository.save(questionAnswer)
         return questionAnswer
     }
 
     def createFailedAnswer(questionAnswer, collected) {
-        def failedAnswer = new FailedAnswer()
-        failedAnswer.setQuestionAnswer(questionAnswer)
-        failedAnswer.setAnswered(questionAnswer.isAnswered())
-        failedAnswer.setCollected(collected)
-        failedAnswer.setDashboard(dashboard)
+        def failedAnswer = new FailedAnswer(dashboard, questionAnswer, collected)
         failedAnswerRepository.save(failedAnswer)
-
         return failedAnswer
     }
 }

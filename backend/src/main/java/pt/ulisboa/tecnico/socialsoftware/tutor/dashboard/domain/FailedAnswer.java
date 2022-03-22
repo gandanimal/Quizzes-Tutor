@@ -8,7 +8,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.SameQuestion;
 
 import java.time.LocalDateTime;
 
@@ -31,7 +30,7 @@ public class FailedAnswer implements DomainEntity {
     @ManyToOne
     private Dashboard dashboard;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = CascadeType.ALL)
     private SameQuestion sameQuestion;
 
     public FailedAnswer(){
@@ -50,23 +49,20 @@ public class FailedAnswer implements DomainEntity {
             throw new TutorException(ErrorMessage.CANNOT_CREATE_FAILED_ANSWER);
         }
 
-        if (dashboard.getFailedAnswers().equals(this)) {
-            throw new TutorException(ErrorMessage.CANNOT_CREATE_FAILED_ANSWER);
-        }
-
         setCollected(collected);
         setAnswered(questionAnswer.isAnswered());
         setQuestionAnswer(questionAnswer);
         setDashboard(dashboard);
-        sameQuestion = new SameQuestion(this);
-        for (FailedAnswer answer : dashboard.getFailedAnswers()) {
-            if(answer.getQuestionAnswer().getQuestion().getId().equals(questionAnswer.getQuestion().getId())) {
-                if ((!answer.equals(this)) && (answer != null)) {
-                    sameQuestion.setSameQuestion(answer);
-                    answer.getSameQuestion().setSameQuestion(this);
-                }
+
+        setSameQuestion(new SameQuestion(this));
+
+        dashboard.getFailedAnswers().stream().forEach(failedAnswer -> {
+            if (failedAnswer.getQuestionAnswer().getQuestion().getId() == this.getQuestionAnswer().getQuestion().getId()
+                    && failedAnswer != this) {
+                sameQuestion.getFailedAnswers().add(failedAnswer);
+                failedAnswer.getSameQuestion().getFailedAnswers().add(this);
             }
-        }
+        });
     }
 
     public void remove() {
@@ -74,13 +70,10 @@ public class FailedAnswer implements DomainEntity {
             throw new TutorException(ErrorMessage.CANNOT_REMOVE_FAILED_ANSWER);
         }
 
-
-        for (FailedAnswer answer : dashboard.getFailedAnswers()) {
-            if(answer.getQuestionAnswer().getQuestion().getId().equals(questionAnswer.getQuestion().getId())) {
-                answer.getSameQuestion().removeSameQuestion(this);
-            }
-        }
-
+        dashboard.getFailedAnswers().stream().filter(failedAnswer -> failedAnswer.getQuestionAnswer().getQuestion().getId()
+                        == getQuestionAnswer().getQuestion().getId() && failedAnswer != this).map(FailedAnswer::getSameQuestion)
+                .forEach(sameQuestion1 -> sameQuestion1.getFailedAnswers().remove(this));
+        sameQuestion.remove();
 
         dashboard.getFailedAnswers().remove(this);
         dashboard = null;
@@ -124,7 +117,11 @@ public class FailedAnswer implements DomainEntity {
     }
 
     public SameQuestion getSameQuestion() {
-      return sameQuestion;
+        return sameQuestion;
+    }
+
+    public void setSameQuestion(SameQuestion sameQuestion) {
+        this.sameQuestion = sameQuestion;
     }
 
     @Override
