@@ -1,25 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
-import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 
 import javax.persistence.*;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.WEEKLY_SCORE_ALREADY_CREATED;
 
 @Entity
 public class WeeklyScore implements DomainEntity {
@@ -46,7 +31,25 @@ public class WeeklyScore implements DomainEntity {
 
     public WeeklyScore(Dashboard dashboard, LocalDate week) {
         setWeek(week);
+        setSamePercentage(new SamePercentage(this));
         setDashboard(dashboard);
+
+        dashboard.getWeeklyScores().stream().forEach(weeklyScore -> {
+            if (weeklyScore.getPercentageCorrect() == this.getPercentageCorrect() && weeklyScore != this) {
+                samePercentage.getWeeklyScores().add(weeklyScore);
+                weeklyScore.getSamePercentage().getWeeklyScores().add(this);
+            }
+        });
+    }
+
+    public void remove() {
+        this.dashboard.getWeeklyScores().remove(this);
+
+        dashboard.getWeeklyScores().stream().filter(weeklyScore -> weeklyScore.getPercentageCorrect() == percentageCorrect && weeklyScore != this).map(WeeklyScore::getSamePercentage)
+                .forEach(samePercentage1 -> samePercentage1.getWeeklyScores().remove(this));
+        samePercentage.remove();
+
+        this.dashboard = null;
     }
 
     public Integer getId() { return id; }
@@ -75,13 +78,6 @@ public class WeeklyScore implements DomainEntity {
         this.week = week;
     }
 
-    public Dashboard getDashboard() { return dashboard; }
-
-    public void setDashboard(Dashboard dashboard) {
-        this.dashboard = dashboard;
-        dashboard.addWeeklyScore(this);
-    }
-
     public SamePercentage getSamePercentage() {
         return samePercentage;
     }
@@ -90,32 +86,14 @@ public class WeeklyScore implements DomainEntity {
         this.samePercentage = samePercentage;
     }
 
-    public void checkSamePercentage(){
-        if(!dashboard.getWeeklyScores().isEmpty()){  //if there are other weekly scores
-            for(WeeklyScore w : dashboard.getWeeklyScores()){
-                if((!Objects.equals(w.getId(), id))){ //check if it's not the same WeeklyScore
-                    if(w.getPercentageCorrect() == this.getPercentageCorrect()){ //check if there are other weekly scores with the same percentage
-                        if(w.getSamePercentage()==null){
-                            w.setSamePercentage(new SamePercentage(w)); //initiate samePercentage of the other weekly score (weeklyscore2) instance if it doesn't exist yet
-                        }
-                        w.getSamePercentage().addWeeklyScore(this); //add weeklyscore1 to weeklyscore2's weekly score hash set
-                        setSamePercentage(new SamePercentage(this)); //initiate samePercentage for weeklyscore1
-                        samePercentage.addWeeklyScore(w); //add weeklyscore2 to weeklyscore1's weekly score hash set
-                    }
-                }
-            }
-        }
+    public Dashboard getDashboard() { return dashboard; }
+
+    public void setDashboard(Dashboard dashboard) {
+        this.dashboard = dashboard;
+        this.dashboard.addWeeklyScore(this);
     }
 
     public void accept(Visitor visitor) {
-    }
-
-    public void remove() {
-        if(samePercentage != null){
-            this.samePercentage.remove(); //remove samePercentage instance
-        }
-        dashboard.getWeeklyScores().remove(this); //remove weekly score from dashboard
-        dashboard = null; //reset dashboard variable
     }
 
     @Override

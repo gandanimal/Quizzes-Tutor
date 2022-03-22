@@ -11,7 +11,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.WeeklyScore;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.dto.WeeklyScoreDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository;
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.SamePercentageRepository;
+
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
@@ -35,51 +37,42 @@ public class WeeklyScoreService {
   @Autowired
   private DashboardRepository dashboardRepository;
 
-  @Autowired
-  private SamePercentageRepository samePercentageRepository;
 
-  @Transactional(isolation = Isolation.READ_COMMITTED) //avoids dirty reads
-
+  @Transactional(isolation = Isolation.READ_COMMITTED)
   public WeeklyScoreDto createWeeklyScore(Integer dashboardId) {
-    if (dashboardId == null) { //if dashboard id is not assigned throw an error
+    if (dashboardId == null) {
       throw new TutorException(DASHBOARD_NOT_FOUND);
     }
 
-    Dashboard dashboard = dashboardRepository.findById(dashboardId)  //get dashboard from the repository
-            .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId)); //throw error if id not found in repository
+    Dashboard dashboard = dashboardRepository.findById(dashboardId)
+            .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
 
-    TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY); //define date as last Sunday to create a current week instance
-    LocalDate week = DateHandler.now().with(weekSunday).toLocalDate(); //convert to local date
+    TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
+    LocalDate week = DateHandler.now().with(weekSunday).toLocalDate();
 
-    WeeklyScore weeklyScore = new WeeklyScore(dashboard, week); //create new Weekly score
-    weeklyScoreRepository.save(weeklyScore); //save in repository
-    weeklyScore.checkSamePercentage();
-    if(weeklyScore.getSamePercentage()!= null)
-      samePercentageRepository.save(weeklyScore.getSamePercentage());
-
-
+    WeeklyScore weeklyScore = new WeeklyScore(dashboard, week);
+    weeklyScoreRepository.save(weeklyScore);
     return new WeeklyScoreDto(weeklyScore);
   }
-
-  @Transactional(isolation = Isolation.READ_COMMITTED) //avoids dirty reads
-  public void removeWeeklyScore(Integer weeklyScoreId){
-    if (weeklyScoreId == null) { //if weekly score id is not assigned throw an error
+  
+  @Transactional(isolation = Isolation.READ_COMMITTED)
+  public void removeWeeklyScore(Integer weeklyScoreId) {
+    if (weeklyScoreId == null) {
       throw new TutorException(WEEKLY_SCORE_NOT_FOUND);
     }
-    WeeklyScore weekScore = weeklyScoreRepository.findById(weeklyScoreId)  //get weekly score from the repository
-            .orElseThrow(()-> new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScoreId)); //throw error if weekly score ID was not found in repository
 
-    TemporalAdjuster weekSun = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY); //define date as last Sunday to create a current week instance
-    LocalDate currentWeek = DateHandler.now().with(weekSun).toLocalDate(); //convert to Local Date
+    WeeklyScore weeklyScore = weeklyScoreRepository.findById(weeklyScoreId)
+            .orElseThrow(() -> new TutorException(WEEKLY_SCORE_NOT_FOUND, weeklyScoreId));
 
-    if (weekScore.getWeek().isEqual(currentWeek)) { //if weekly score being removed was created in the current week it cannot be removed
+    TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
+    LocalDate currentWeek = DateHandler.now().with(weekSunday).toLocalDate();
+
+    if (weeklyScore.getWeek().isEqual(currentWeek)) {
       throw new TutorException(CANNOT_REMOVE_WEEKLY_SCORE);
     }
-    weeklyScoreRepository.delete(weekScore); //delete weekly score from repository
-    if(weekScore.getSamePercentage() != null)
-      samePercentageRepository.delete(weekScore.getSamePercentage());
-    weekScore.remove(); //delete weekly score from dashboard
 
+    weeklyScore.remove();
+    weeklyScoreRepository.delete(weeklyScore);
   }
 
 }
