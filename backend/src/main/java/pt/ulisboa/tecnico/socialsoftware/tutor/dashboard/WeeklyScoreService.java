@@ -12,6 +12,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.dto.WeeklyScoreDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.SamePercentageRepository;
+
+
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 
@@ -34,6 +37,7 @@ public class WeeklyScoreService {
   @Autowired
   private DashboardRepository dashboardRepository;
 
+
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public WeeklyScoreDto createWeeklyScore(Integer dashboardId) {
     if (dashboardId == null) {
@@ -48,10 +52,9 @@ public class WeeklyScoreService {
 
     WeeklyScore weeklyScore = new WeeklyScore(dashboard, week);
     weeklyScoreRepository.save(weeklyScore);
-
     return new WeeklyScoreDto(weeklyScore);
   }
-
+  
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public void removeWeeklyScore(Integer weeklyScoreId) {
     if (weeklyScoreId == null) {
@@ -71,4 +74,5 @@ public class WeeklyScoreService {
     weeklyScore.remove();
     weeklyScoreRepository.delete(weeklyScore);
   }
+
 }
