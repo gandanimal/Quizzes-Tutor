@@ -39,16 +39,7 @@ public class Dashboard implements DomainEntity {
     private Student student;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
-    private Set<WeeklyScore> weeklyScores = new HashSet<>();
-  
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
-    private final List<FailedAnswer> failedAnswers = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
     private Set<DifficultQuestion> difficultQuestions = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
-    private Set<FailedAnswer> failedAnswers = new HashSet<>();
 
     public Dashboard() {
     }
@@ -115,24 +106,9 @@ public class Dashboard implements DomainEntity {
         this.difficultQuestions = difficultQuestions;
     }
 
-    public Set<FailedAnswer> getFailedAnswers() {
-        return failedAnswers;
-    }
-
     public void remove() {
         student.getDashboards().remove(this);
         student = null;
-    }
-
-    public Set<WeeklyScore> getWeeklyScores() {
-        return weeklyScores;
-    }
-
-    public void addWeeklyScore(WeeklyScore weeklyScore) {
-        if (weeklyScores.stream().anyMatch(weeklyScore1 -> weeklyScore1.getWeek().isEqual(weeklyScore.getWeek()))) {
-            throw new TutorException(ErrorMessage.WEEKLY_SCORE_ALREADY_CREATED);
-        }
-        weeklyScores.add(weeklyScore);
     }
 
     public void addDifficultQuestion(DifficultQuestion difficultQuestion) {
@@ -141,13 +117,6 @@ public class Dashboard implements DomainEntity {
             throw new TutorException(ErrorMessage.DIFFICULT_QUESTION_ALREADY_CREATED);
         }
         difficultQuestions.add(difficultQuestion);
-    }
-
-    public void addFailedAnswer(FailedAnswer failedAnswer) {
-        if (failedAnswers.stream().anyMatch(failedAnswer1 -> failedAnswer1.getQuestionAnswer() == failedAnswer.getQuestionAnswer())) {
-            throw new TutorException(ErrorMessage.FAILED_ANSWER_ALREADY_CREATED);
-        }
-        failedAnswers.add(failedAnswer);
     }
 
     public void accept(Visitor visitor) {
