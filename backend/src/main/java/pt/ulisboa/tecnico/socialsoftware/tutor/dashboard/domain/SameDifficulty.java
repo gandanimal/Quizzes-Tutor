@@ -1,59 +1,63 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 
-import java.util.Set;
-import javax.persistence.Entity;
-import java.util.HashSet;
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-public class SameDifficulty implements DomainEntity {
+public class SameDifficulty implements DomainEntity
+{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "percentage", orphanRemoval = true) 
-    private Set<DifficultQuestion> difficultQuestions = new HashSet<>();
 
     @OneToOne
     private DifficultQuestion difficultQuestion;
 
-    public SameDifficulty(){
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "same_difficulty_id")
+    private Set<DifficultQuestion> difficultQuestions = new HashSet<>();
+
+    public SameDifficulty() {}
+
+    public SameDifficulty(DifficultQuestion difficultQuestion) {
+        this.difficultQuestion = difficultQuestion;
     }
 
-    public SameDifficulty(DifficultQuestion difficultQuestion){
-        this.difficultQuestion = difficultQuestion;
+    public void remove() {
+        difficultQuestions.clear();
     }
 
     public Integer getId() {
         return id;
     }
+    
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public DifficultQuestion getDifficultQuestion() {
+        return difficultQuestion;
+    }
+
+    public void setDifficultQuestion(DifficultQuestion difficultQuestion) {
+        this.difficultQuestion = difficultQuestion;
+    }
 
     public Set<DifficultQuestion> getDifficultQuestions() {
-        return this.difficultQuestions;
+        return difficultQuestions;
     }
 
-    public void addDifficultQuestion(DifficultQuestion difficultQuestion) {
-        if (difficultQuestions.stream()
-                .anyMatch(difficultQuestion1 -> difficultQuestion1.getQuestion().getId() == difficultQuestion.getQuestion().getId())) {
-            throw new TutorException(ErrorMessage.DIFFICULT_QUESTION_ALREADY_CREATED);
-        }
-        difficultQuestions.add(difficultQuestion);
+    public void setDifficultQuestions(Set<DifficultQuestion> difficultQuestions) {
+        this.difficultQuestions = difficultQuestions;
     }
 
-    public void remove(){
-        for (DifficultQuestion d: difficultQuestions){
-            d.getSameDifficulty().difficultQuestions.remove(d);
-        }
-        difficultQuestion = null;
-
-    }
-
+    @Override
     public void accept(Visitor visitor) {
-    // TODO Auto-generated method stub
+
     }
 }
+

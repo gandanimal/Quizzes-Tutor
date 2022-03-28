@@ -21,89 +21,155 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.DA
 
 @DataJpaTest
 class CreateWeeklyScoreTest extends SpockTest {
+
     def student
-    def dashboard;
+    def dashboard
 
-    def setup(){
-        createExternalCourseAndExecution() //create course
+    def setup() {
+        createExternalCourseAndExecution()
 
-        student = new Student(USER_1_USERNAME, false) //create student
-        student.addCourse(externalCourseExecution) //add student to course
-        userRepository.save(student) //save student in user repository
-        dashboard = new Dashboard(externalCourseExecution, student) // create new dashboard
-        dashboardRepository.save(dashboard) //save dashboard in repository
+        student = new Student(USER_1_NAME, false)
+        student.addCourse(externalCourseExecution)
+        userRepository.save(student)
+        dashboard = new Dashboard(externalCourseExecution, student)
+        dashboardRepository.save(dashboard)
     }
 
-    def "Create WeeklyScore"(){
+    def "create weekly score"() {
         when:
-        weeklyScoreService.createWeeklyScore(dashboard.getId()) //when a weekly score is created
+        weeklyScoreService.createWeeklyScore(dashboard.getId())
 
         then:
-        weeklyScoreRepository.count() == 1L //check if number of Weekly Scores in repository increased
-        def result = weeklyScoreRepository.findAll().get(0) // get the results
-        result.getId() != null //check if result has been assigned an ID
-        result.getDashboard().getId() == dashboard.getId() //check if result dashboard is the same as current dashboard
-        result.getNumberAnswered() == 0 //check if the number of answered questions/uniquely answered/percentage of correct answers is set to default 0
+        weeklyScoreRepository.count() == 1L
+        def result = weeklyScoreRepository.findAll().get(0)
+        result.getId() != null
+        result.getDashboard().getId() == dashboard.getId()
+        result.getNumberAnswered() == 0
         result.getUniquelyAnswered() == 0
         result.getPercentageCorrect() == 0
-        and: // and check if current dashboard contains the same result as the weekly Score Repository
+        result.getSamePercentage().getWeeklyScores().size() == 0
+        and:
         def dashboard = dashboardRepository.getById(dashboard.getId())
         dashboard.getWeeklyScores().contains(result)
+        and:
+        samePercentageRepository.findAll().size() == 1
     }
 
-
-    def "Create two WeeklyScores that have the Same Percentage of correct answers"(){
+    def "create three weekly scores with same percentage"() {
         given:
-        def weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY) //define date as sunday
-        def week = DateHandler.now().minusDays(30).with(weekSunday).toLocalDate() //define week as 30 days ago
-        def weeklyScore3 = new WeeklyScore(dashboard,week)//create another weeklyScore with same percentagecorrect=0 on a different week
-        weeklyScoreRepository.save(weeklyScore3) //save in repository
-
-
+        TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)
+        LocalDate week = DateHandler.now().with(weekSunday).toLocalDate()
+        def weeklyScore1 = new WeeklyScore(dashboard, week.minusDays(50))
+        weeklyScoreRepository.save(weeklyScore1)
+        def weeklyScore2 = new WeeklyScore(dashboard, week.minusDays(30))
+        weeklyScoreRepository.save(weeklyScore2)
 
         when:
-        weeklyScoreService.createWeeklyScore(dashboard.getId()) //create weeklyScore
+        def weeklyScoreDto = weeklyScoreService.createWeeklyScore(dashboard.getId())
+
+        then:
+        weeklyScoreRepository.count() == 3L
+        def result1 = weeklyScoreRepository.findById(weeklyScore1.getId()).get()
+        result1.getId() == weeklyScore1.getId()
+        result1.getDashboard().getId() == dashboard.getId()
+        result1.getNumberAnswered() == 0
+        result1.getUniquelyAnswered() == 0
+        result1.getPercentageCorrect() == 0
+        result1.getSamePercentage().weeklyScores.size() == 2
+        result1.getSamePercentage().weeklyScores.contains(weeklyScore2)
+        def result2 = weeklyScoreRepository.findById(weeklyScore2.getId()).get()
+        result2.getId() == weeklyScore2.getId()
+        result2.getDashboard().getId() == dashboard.getId()
+        result2.getNumberAnswered() == 0
+        result2.getUniquelyAnswered() == 0
+        result2.getPercentageCorrect() == 0
+        result2.getSamePercentage().weeklyScores.size() == 2
+        result2.getSamePercentage().weeklyScores.contains(weeklyScore1)
+        def result3 = weeklyScoreRepository.findById(weeklyScoreDto.getId()).get()
+        result3.getId() == weeklyScoreDto.getId()
+        result3.getDashboard().getId() == dashboard.getId()
+        result3.getNumberAnswered() == 0
+        result3.getUniquelyAnswered() == 0
+        result3.getPercentageCorrect() == 0
+        result3.getSamePercentage().weeklyScores.size() == 2
+        result3.getSamePercentage().weeklyScores.contains(weeklyScore1)
+        result3.getSamePercentage().weeklyScores.contains(weeklyScore2)
+        and:
+        def dashboard = dashboardRepository.getById(dashboard.getId())
+        dashboard.getWeeklyScores().contains(result3)
+        and:
+        samePercentageRepository.findAll().size() == 3
+        def samePercentage1 = samePercentageRepository.findAll().get(0)
+        samePercentage1.getWeeklyScores().size() == 2
+        def samePercentage2 = samePercentageRepository.findAll().get(1)
+        samePercentage2.getWeeklyScores().size() == 2
+        def samePercentage3 = samePercentageRepository.findAll().get(2)
+        samePercentage3.getWeeklyScores().size() == 2
+    }
+
+    def "create two weekly scores with different percentage"() {
+        given:
+        TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)
+        LocalDate week = DateHandler.now().with(weekSunday).toLocalDate()
+        def weeklyScore = new WeeklyScore(dashboard, week.minusDays(50))
+        weeklyScore.setPercentageCorrect(30)
+        weeklyScoreRepository.save(weeklyScore)
+
+        when:
+        def weeklyScoreDto = weeklyScoreService.createWeeklyScore(dashboard.getId())
 
         then:
         weeklyScoreRepository.count() == 2L
-        def weeklyScore2 = weeklyScoreRepository.findAll().get(1)
-        def weeklyScore1 = weeklyScoreRepository.findAll().get(0)
-        weeklyScore1.getSamePercentage().getId() != null //check if samePercentage were created
-        weeklyScore2.getSamePercentage().getId() != null
-        weeklyScore1.getPercentageCorrect() == weeklyScore2.getPercentageCorrect() //check if percentage is the same in both
-        samePercentageRepository.count() == 2L    //check if they were added to repository
-        weeklyScore1.getSamePercentage().getOriginWeeklyScore() == weeklyScore1 //check if weeklyScore in samepercentage is correctly assigned
-        weeklyScore2.getSamePercentage().getOriginWeeklyScore() == weeklyScore2
-        weeklyScore1.getSamePercentage().getWeeklyScores().getAt(0) == weeklyScore2 //check if weeklyScore list in samepercentage points to the other weeklyScore
-        weeklyScore2.getSamePercentage().getWeeklyScores().getAt(0) == weeklyScore1
-        samePercentageRepository.findAll().get(1) == weeklyScore1.getSamePercentage() //check if repository has correctly stored the weeklyScores
-        samePercentageRepository.findAll().get(0) == weeklyScore2.getSamePercentage()
+        def result = weeklyScoreRepository.findById(weeklyScore.getId()).get()
+        result.getId() == weeklyScore.getId()
+        result.getDashboard().getId() == dashboard.getId()
+        result.getNumberAnswered() == 0
+        result.getUniquelyAnswered() == 0
+        result.getPercentageCorrect() == 30
+        result.getSamePercentage().weeklyScores.size() == 0
+        def result2 = weeklyScoreRepository.findById(weeklyScoreDto.getId()).get()
+        result2.getId() == weeklyScoreDto.getId()
+        result2.getDashboard().getId() == dashboard.getId()
+        result2.getNumberAnswered() == 0
+        result2.getUniquelyAnswered() == 0
+        result2.getPercentageCorrect() == 0
+        result2.getSamePercentage().weeklyScores.size() == 0
+        and:
+        def dashboard = dashboardRepository.getById(dashboard.getId())
+        dashboard.getWeeklyScores().contains(result)
+        and:
+        samePercentageRepository.findAll().size() == 2
+        def samePercentage1 = samePercentageRepository.findAll().get(0)
+        samePercentage1.getWeeklyScores().size() == 0
+        def samePercentage2 = samePercentageRepository.findAll().get(1)
+        samePercentage2.getWeeklyScores().size() == 0
     }
 
-    def "Cannot create multiple WeeklyScore for the same week"(){
-
-        given: //already existing Weekly Score
+    def "cannot create multiple WeeklyScore for the same week"() {
+        given:
         weeklyScoreService.createWeeklyScore(dashboard.getId())
 
-        when: //another weekly scores is created in the same week
+        when:
         weeklyScoreService.createWeeklyScore(dashboard.getId())
 
         then:
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.WEEKLY_SCORE_ALREADY_CREATED //check if error is correctly thrown
-        weeklyScoreRepository.count() == 1L //check if the number of Weekly scores hasn't changed
+        exception.getErrorMessage() == ErrorMessage.WEEKLY_SCORE_ALREADY_CREATED
+        weeklyScoreRepository.count() == 1
+        samePercentageRepository.findAll().size() == 1
     }
+
     @Unroll
-    def "Cannot create WeeklyScore with invalid dashboard=#dashboardId"(){
-        when: //when weekly score is created with a certain invalid dashboardID
+    def "cannot create WeeklyScore with invalid dashboard=#dashboardId"() {
+        when:
         weeklyScoreService.createWeeklyScore(dashboardId)
 
         then:
-        def exception = thrown(TutorException) //define exception that is supposed to be thrown
-        exception.getErrorMessage() == errorMessage //check if exception thrown is the correct exception
-        weeklyScoreRepository.count() == 0L //check if the weekly score repository hasn't inscreased
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == errorMessage
+        weeklyScoreRepository.count() == 0L
 
-        where: //define values to be tested: null and 100 and respective error message that should be thrown
+        where:
         dashboardId || errorMessage
         null        || DASHBOARD_NOT_FOUND
         100         || DASHBOARD_NOT_FOUND
