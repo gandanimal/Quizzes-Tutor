@@ -34,7 +34,7 @@ public class SameDifficulty implements DomainEntity
     public Integer getId() {
         return id;
     }
-
+    
     public void setId(Integer id) {
         this.id = id;
     }
@@ -60,3 +60,4 @@ public class SameDifficulty implements DomainEntity
 
     }
 }
+

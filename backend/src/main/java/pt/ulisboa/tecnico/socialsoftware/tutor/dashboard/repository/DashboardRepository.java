@@ -9,5 +9,5 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.Dashboard;
 @Repository
 @Transactional
 public interface DashboardRepository extends JpaRepository<Dashboard, Integer> {
-    
+
 }

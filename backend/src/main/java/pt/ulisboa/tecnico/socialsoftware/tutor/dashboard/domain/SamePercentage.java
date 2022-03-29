@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+
 @Entity
 public class SamePercentage implements DomainEntity
 {
@@ -57,6 +58,5 @@ public class SamePercentage implements DomainEntity
 
     @Override
     public void accept(Visitor visitor) {
-
     }
 }
