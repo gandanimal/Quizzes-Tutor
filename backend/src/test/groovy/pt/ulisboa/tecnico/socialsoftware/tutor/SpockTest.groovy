@@ -292,15 +292,6 @@ class SpockTest extends Specification {
     ReplyRepository replyRepository
 
     @Autowired
-    WeeklyScoreRepository weeklyScoreRepository
-
-    @Autowired
-    SamePercentageRepository samePercentageRepository
-
-    @Autowired
-    WeeklyScoreService weeklyScoreService
-
-    @Autowired
     DemoUtils demoUtils
 
     Course externalCourse
