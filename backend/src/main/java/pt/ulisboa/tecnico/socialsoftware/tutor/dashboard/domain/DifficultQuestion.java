@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
@@ -134,6 +135,10 @@ public class DifficultQuestion implements DomainEntity {
     @Override
     public void accept(Visitor visitor) {
         // TODO Auto-generated method stub
+    }
+
+    public QuestionDto getQuestionDto(){
+        return new QuestionDto(question);
     }
 
     @Override

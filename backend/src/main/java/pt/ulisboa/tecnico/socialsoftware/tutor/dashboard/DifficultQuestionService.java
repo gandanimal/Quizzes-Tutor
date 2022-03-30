@@ -17,6 +17,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Service
 public class DifficultQuestionService {
     @Autowired
@@ -50,4 +54,16 @@ public class DifficultQuestionService {
             difficultQuestion.setRemovedDate(DateHandler.now());
         }
     }
+    
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<DifficultQuestion> getDifficultQuestions(int dashboardId) {
+        Dashboard dashboard = dashboardRepository.findById(dashboardId).orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
+        List < DifficultQuestion > dq = new ArrayList< DifficultQuestion >();
+        for (DifficultQuestion d : dashboard.getDifficultQuestions()){
+            if(!d.isRemoved()){
+                dq.add(d);
+            }
+        }
+        return dq;
+    }        
 }
