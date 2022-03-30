@@ -43,7 +43,11 @@ public class DifficultQuestionService {
     public void removeDifficultQuestion(int difficultQuestionId) {
         DifficultQuestion difficultQuestion = difficultQuestionRepository.findById(difficultQuestionId).orElseThrow(() -> new TutorException(DIFFICULT_QUESTION_NOT_FOUND, difficultQuestionId));
 
-        difficultQuestion.remove();
-        difficultQuestionRepository.delete(difficultQuestion);
+        if(difficultQuestion.isRemoved()){
+            throw new TutorException(ErrorMessage.CANNOT_REMOVE_DIFFICULT_QUESTION);
+        }else{
+            difficultQuestion.setRemoved(true);
+            difficultQuestion.setRemovedDate(DateHandler.now());
+        }
     }
 }

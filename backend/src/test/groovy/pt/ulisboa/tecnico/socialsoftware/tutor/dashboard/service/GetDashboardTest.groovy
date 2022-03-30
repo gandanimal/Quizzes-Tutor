@@ -26,10 +26,7 @@ class GetDashboardTest extends SpockTest {
         dashboardRepository.count() == 1L
         def result = dashboardRepository.findAll().get(0)
         result.getId() != 0
-        result.getLastCheckFailedAnswers() != null
-        result.getLastCheckDifficultQuestions() != null
-        result.getLastCheckFailedAnswers() == result.getLastCheckDifficultQuestions()
-        result.getLastCheckWeeklyScores() != null
+        result.getLastCheckDifficultQuestions() == null
         result.getCourseExecution().getId() == courseExecutionDto.getCourseExecutionId()
         result.getStudent().getId() == authUserDto.getId()
 
