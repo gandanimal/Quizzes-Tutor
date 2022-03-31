@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DashboardService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DifficultQuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.dto.DashboardDto;
 
 import java.security.Principal;
@@ -18,6 +19,9 @@ public class DashboardController {
 
     @Autowired
     private DashboardService dashboardService;
+
+    @Autowired
+    private DifficultQuestionService difficultQuestionService;
 
     DashboardController(DashboardService dashboardService) {
         this.dashboardService = dashboardService;
@@ -30,4 +34,11 @@ public class DashboardController {
 
         return this.dashboardService.getDashboard(courseExecutionId, studentId);
     }
+
+    @DeleteMapping("/students/difficultQuestions/{difficultQuestionId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#difficultQuestionId, 'DIFFICULTQUESTION.ACCESS')")
+    public void removeDifficultQuestions(@PathVariable int difficultQuestionId) {
+        this.difficultQuestionService.removeDifficultQuestion(difficultQuestionId);
+    }
+
 }
