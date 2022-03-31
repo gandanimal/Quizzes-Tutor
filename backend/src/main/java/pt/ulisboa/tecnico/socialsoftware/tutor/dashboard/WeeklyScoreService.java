@@ -98,5 +98,24 @@ public class WeeklyScoreService {
     return weeklyScoreDtos;
   }
 
+  @Transactional(isolation = Isolation.READ_COMMITTED)
+  public void updateWeeklyScoreService(Integer dashboardId){
+    if (dashboardId == null) {
+      throw new TutorException(DASHBOARD_NOT_FOUND);
+    }
+    if (weeklyScoreRepository.count()==0L){
+      WeeklyScore weeklyScore = createWeeklyScore(dashboardId);
+    }
+    List<WeeklyScore> weeklyScoreList = new ArrayList<>(dashboard.getWeeklyScores());
+    for(WeeklyScore weeklyScore : weeklyScoreList){
+      weeklyScore.computeStatistics();
+    }
+
+    TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
+    LocalDate currentWeek = DateHandler.now().with(weekSunday).toLocalDate();
+    dashboardId.setLastCheckWeeklyScores(currentWeek);
+    
+  }
+
 
 }
