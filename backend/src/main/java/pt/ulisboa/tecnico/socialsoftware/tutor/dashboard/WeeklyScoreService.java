@@ -104,14 +104,20 @@ public class WeeklyScoreService {
     if (dashboardId == null) {
       throw new TutorException(DASHBOARD_NOT_FOUND);
     }
-    if (weeklyScoreRepository.count()==0L){
-      createWeeklyScore(dashboardId);
-    }
     Dashboard dashboard = dashboardRepository.findById(dashboardId)
             .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
     List<WeeklyScore> weeklyScoreList = new ArrayList<>(dashboard.getWeeklyScores());
+    TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
+    LocalDate currentWeek = DateHandler.now().with(weekSunday).toLocalDate();
+    if (!weeklyScoreList.stream().anyMatch(weeklyScore -> weeklyScore.getWeek.equals(currentWeek))){
+      createWeeklyScore(dashboardId);
+    }
+
     for(WeeklyScore weeklyScore : weeklyScoreList){
       weeklyScore.computeStatistics();
+      if(weeklyScore.isClosed()){
+        removeWeeklyScore(weeklyScore.getId());
+      }
     }
 
 
