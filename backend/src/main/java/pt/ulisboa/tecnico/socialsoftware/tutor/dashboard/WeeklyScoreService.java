@@ -112,7 +112,6 @@ public class WeeklyScoreService {
     List<WeeklyScore> weeklyScoreList = new ArrayList<>(dashboard.getWeeklyScores());
     for(WeeklyScore weeklyScore : weeklyScoreList){
       weeklyScore.computeStatistics();
-      if(weeklyScore.get)
     }
 
 
