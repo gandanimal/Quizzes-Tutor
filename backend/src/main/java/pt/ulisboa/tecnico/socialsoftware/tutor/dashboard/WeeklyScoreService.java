@@ -21,6 +21,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class WeeklyScoreService {
     weeklyScoreRepository.save(weeklyScore);
     return new WeeklyScoreDto(weeklyScore);
   }
-  
+
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public void removeWeeklyScore(Integer weeklyScoreId) {
     if (weeklyScoreId == null) {
@@ -99,7 +100,7 @@ public class WeeklyScoreService {
   }
 
   @Transactional(isolation = Isolation.READ_COMMITTED)
-  public void updateWeeklyScoreService(Integer dashboardId){
+  public void updateWeeklyScore(Integer dashboardId){
     if (dashboardId == null) {
       throw new TutorException(DASHBOARD_NOT_FOUND);
     }
@@ -115,8 +116,8 @@ public class WeeklyScoreService {
 
 
     LocalDateTime now = DateHandler.now();
-    dashboardId.setLastCheckWeeklyScores(now);
-    
+    dashboard.setLastCheckWeeklyScores(now);
+
   }
 
 
