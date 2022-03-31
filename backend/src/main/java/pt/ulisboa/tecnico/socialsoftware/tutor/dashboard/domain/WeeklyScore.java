@@ -153,6 +153,10 @@ public class WeeklyScore implements DomainEntity {
         this.closed = close;
     }
 
+    public boolean isClosed() {
+        return closed;
+    }
+
     public Dashboard getDashboard() { return dashboard; }
 
     public void setDashboard(Dashboard dashboard) {
