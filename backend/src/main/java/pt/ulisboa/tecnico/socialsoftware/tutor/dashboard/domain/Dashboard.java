@@ -48,7 +48,7 @@ public class Dashboard implements DomainEntity {
         LocalDateTime currentDate = DateHandler.now();
         setLastCheckFailedAnswers(currentDate);
         setLastCheckDifficultQuestions(currentDate);
-        setLastCheckWeeklyScores(currentDate);
+        setLastCheckWeeklyScores(null);
         setCourseExecution(courseExecution);
         setStudent(student);
     }
