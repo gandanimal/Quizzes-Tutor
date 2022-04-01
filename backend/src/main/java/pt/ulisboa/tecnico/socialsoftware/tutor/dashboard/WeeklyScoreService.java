@@ -99,6 +99,8 @@ public class WeeklyScoreService {
     return weeklyScoreDtos;
   }
 
+
+  /*
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public void updateWeeklyScore(Integer dashboardId){
     if (dashboardId == null) {
@@ -106,18 +108,35 @@ public class WeeklyScoreService {
     }
     Dashboard dashboard = dashboardRepository.findById(dashboardId)
             .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
-    List<WeeklyScore> weeklyScoreList = new ArrayList<>(dashboard.getWeeklyScores());
+
     TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
     LocalDate currentWeek = DateHandler.now().with(weekSunday).toLocalDate();
-    if (!weeklyScoreList.stream().anyMatch(weeklyScore -> weeklyScore.getWeek.equals(currentWeek))){
+    if (dashboard.getWeeklyScores().stream().noneMatch(weeklyScore -> weeklyScore.getWeek.equals(currentWeek))){
       createWeeklyScore(dashboardId);
+
     }
 
-    for(WeeklyScore weeklyScore : weeklyScoreList){
-      weeklyScore.computeStatistics();
-      if(weeklyScore.isClosed()){
-        removeWeeklyScore(weeklyScore.getId());
+
+    TemporalAdjuster weekSaturday = TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY);
+    Set<QuizAnswer> quizAnswerSet = dashboard.getStudent().getQuizAnswers().stream()
+            .filter(quizAnswer -> quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
+                    quizAnswer.getQuiz().getAvailableDate().toLocalDate().isBefore(currentWeek))
+            .collect(Collectors.toSet());
+    for(QuizAnswer quizAnswer : quizAnswerSet){
+      LocalDate resultsWeek = quizAnswer.getQuiz().getResultsDate().with(weekSunday).toLocalDate();
+      if (dashboard.getWeeklyScores().stream().noneMatch(weeklyScore -> weeklyScore.getWeek.equals(resultsWeek))){
+        WeeklyScore weeklyScore = new WeeklyScore(dashboard, resultsWeek);
+        weeklyScoreRepository.save(weeklyScore);
       }
+    }
+
+    List<WeeklyScore> weeklyScoreList = new ArrayList<>(dashboard.getWeeklyScores());
+    for(WeeklyScore weeklyScore : weeklyScoreList){
+      if(weeklyScore.getWeek.equals(currentWeek))
+        weeklyScore.computeStatistics();
+      if(weeklyScore.getNumberAnswered() == 0 && weeklyScore.isClosed())
+        removeWeeklyScore(weeklyScore.getId());
+
     }
 
 
@@ -125,6 +144,8 @@ public class WeeklyScoreService {
     dashboard.setLastCheckWeeklyScores(now);
 
   }
+
+   */
 
 
 }
