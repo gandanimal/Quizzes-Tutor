@@ -20,7 +20,7 @@ public class FailedAnswerController {
     }
 
     // Get web failedAnswer service
-    @GetMapping("/students/dashboards/{dashboardId}")
+    @GetMapping("/students/dashboards/failedAnswer/{dashboardId}")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#dashboardId, 'DASHBOARD.ACCESS')")
     public List<FailedAnswerDto> getFailedAnswers(@PathVariable int dashboardId) {
         return failedAnswerService.getFailedAnswers(dashboardId);
@@ -34,7 +34,7 @@ public class FailedAnswerController {
     }
 
     // Update web failedAnswer service
-    @PutMapping("/students/dashboards/{dashboardId}")
+    @PutMapping("/students/dashboards/failedAnswer/{dashboardId}")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#dashboardId, 'DASHBOARD.ACCESS')")
     public void updateFailedAnswers(@PathVariable int dashboardId) {
         this.failedAnswerService.updateFailedAnswers(dashboardId);
