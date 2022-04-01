@@ -27,6 +27,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.Dashboard;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.FailedAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.FailedAnswerRepository;
 
 import java.io.Serializable;
 
@@ -67,6 +71,12 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
 
     @Autowired
     private CourseExecutionRepository courseExecutionRepository;
+
+    @Autowired
+    private DashboardRepository dashboardRepository;
+
+    @Autowired
+    private FailedAnswerRepository failedAnswerRepository;
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
@@ -158,6 +168,12 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 case "REPLY.ACCESS":
                     Reply reply = replyRepository.findById(id).orElse(null);
                     return reply != null && userHasThisExecution(authUser, reply.getDiscussion().getCourseExecution().getId());
+                case "DASHBOARD.ACCESS":
+                    Dashboard dashboard = dashboardRepository.findById(id).orElse(null);
+                    return dashboard.getStudent().getId().equals(userId);
+                case "FAILEDANSWER.ACCESS":
+                    FailedAnswer failedAnswer = failedAnswerRepository.findById(id).orElse(null);
+                    return failedAnswer.getDashboard().getStudent().getId().equals(userId);
                 default: return false;
             }
         }
