@@ -46,7 +46,7 @@ class GetFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
         createdUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
 
         when:
-        response = restClient.get( path:'/students/dashboards/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get( path:'/students/dashboards/failedAnswer/' + dashboard.getId(), requestContentType: 'application/json')
 
         then:
         response.status == 200
@@ -66,7 +66,7 @@ class GetFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
         demoTeacherLogin()
 
         when:
-        response = restClient.get( path:'/students/dashboards/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get( path:'/students/dashboards/failedAnswer/' + dashboard.getId(), requestContentType: 'application/json')
 
         then:
         def error = thrown(HttpResponseException)
@@ -85,7 +85,7 @@ class GetFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
         demoStudentLogin()
 
         when:
-        response = restClient.get( path:'/students/dashboards/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get( path:'/students/dashboards/failedAnswer/' + dashboard.getId(), requestContentType: 'application/json')
 
         then:
         def error = thrown(HttpResponseException)

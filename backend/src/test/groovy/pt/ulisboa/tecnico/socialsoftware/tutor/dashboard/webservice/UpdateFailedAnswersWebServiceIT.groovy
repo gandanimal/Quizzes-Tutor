@@ -48,7 +48,7 @@ class UpdateFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
         demoTeacherLogin()
 
         when:
-        response = restClient.put( path:'/students/dashboards/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.put( path:'/students/dashboards/failedAnswer/' + dashboard.getId(), requestContentType: 'application/json')
 
         then:
         def error = thrown(HttpResponseException)
@@ -66,7 +66,7 @@ class UpdateFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
         demoStudentLogin()
 
         when:
-        response = restClient.put( path:'/students/dashboards/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.put( path:'/students/dashboards/failedAnswer/' + dashboard.getId(), requestContentType: 'application/json')
 
         then:
         def error = thrown(HttpResponseException)
