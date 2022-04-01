@@ -28,6 +28,10 @@ public class WeeklyScoreController {
         return this.weeklyScoreService.getWeeklyScores(dashboardId);
     }
     //Delete Rest
-
+    @DeleteMapping("/students/weeklyScores/{weeklyScoreId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#weeklyScoreId, 'WEEKLY_SCORE.ACCESS')")
+    public void removeWeeklyScore(Principal principal, @PathVariable int weeklyScoreId){
+        this.weeklyScoreService.removeWeeklyScore(weeklyScoreId);
+    }
     //Update Rest
 }
