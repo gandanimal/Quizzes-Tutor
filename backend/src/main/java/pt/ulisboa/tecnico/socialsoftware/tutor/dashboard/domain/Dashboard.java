@@ -15,7 +15,6 @@ import java.util.Set;
 
 
 
-
 import javax.persistence.*;
 
 @Entity
@@ -40,9 +39,6 @@ public class Dashboard implements DomainEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
     private Set<WeeklyScore> weeklyScores = new HashSet<>();
-  
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
-    private final List<FailedAnswer> failedAnswers = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dashboard", orphanRemoval = true)
     private Set<DifficultQuestion> difficultQuestions = new HashSet<>();

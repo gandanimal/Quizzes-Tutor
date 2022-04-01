@@ -176,4 +176,4 @@ class RemoveDifficultQuestionTest extends SpockTest {
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
-}
+} 
