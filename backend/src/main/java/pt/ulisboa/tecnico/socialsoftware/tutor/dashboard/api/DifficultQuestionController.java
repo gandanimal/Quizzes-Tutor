@@ -21,7 +21,7 @@ public class DifficultQuestionController {
         this.difficultQuestionService = difficultQuestionService;
     }
 
-    @GetMapping("/students/dashboards/{dashboardId}")
+    @GetMapping("/students/dashboards/difficultQuestion/{dashboardId}")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#dashboardId, 'DASHBOARD.ACCESS')")
     public List <DifficultQuestionDto> getDifficultQuestions(@PathVariable int dashboardId) {
         return this.difficultQuestionService.getDifficultQuestions(dashboardId);
@@ -32,4 +32,10 @@ public class DifficultQuestionController {
     public void removeDifficultQuestions(@PathVariable int difficultQuestionId) {
         this.difficultQuestionService.removeDifficultQuestion(difficultQuestionId);
     } 
+
+    @PutMapping("/students/dashboards/difficultQuestion/{dashboardId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#dashboardId, 'DASHBOARD.ACCESS')")
+    public void updateDifficultQuestions(@PathVariable int dashboardId) {
+        this.difficultQuestionService.updateDifficultQuestions(dashboardId);
+    }
 }

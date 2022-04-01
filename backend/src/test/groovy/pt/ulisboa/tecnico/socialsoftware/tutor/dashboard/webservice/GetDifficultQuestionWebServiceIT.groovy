@@ -78,7 +78,7 @@ class GetDifficultQuestionWebServiceIT extends SpockTest {
         createdUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
 
         when:
-        response = restClient.get( path:'/students/dashboards/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get( path:'/students/dashboards/difficultQuestion/' + dashboard.getId(), requestContentType: 'application/json')
 
         then:
         response.status == 200
@@ -95,7 +95,7 @@ class GetDifficultQuestionWebServiceIT extends SpockTest {
         userRepository.save(teacher)
 
         when:
-        response = restClient.get( path:'/students/dashboards/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get( path:'/students/dashboards/difficultQuestion/' + dashboard.getId(), requestContentType: 'application/json')
 
         then:
         def error = thrown(HttpResponseException)
@@ -110,7 +110,7 @@ class GetDifficultQuestionWebServiceIT extends SpockTest {
         userRepository.save(student1)
 
         when:
-        response = restClient.get( path:'/students/dashboards/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get( path:'/students/dashboards/difficultQuestion/' + dashboard.getId(), requestContentType: 'application/json')
 
         then:
         def error = thrown(HttpResponseException)
