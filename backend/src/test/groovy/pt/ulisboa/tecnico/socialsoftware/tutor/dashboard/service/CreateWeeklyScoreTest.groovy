@@ -177,4 +177,4 @@ class CreateWeeklyScoreTest extends SpockTest {
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
-}
+} 

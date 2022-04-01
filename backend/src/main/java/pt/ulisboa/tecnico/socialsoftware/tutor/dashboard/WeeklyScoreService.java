@@ -102,6 +102,7 @@ public class WeeklyScoreService {
     return weeklyScoreDtos;
   }
 
+
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public void updateWeeklyScore(Integer dashboardId){
     if (dashboardId == null) {
