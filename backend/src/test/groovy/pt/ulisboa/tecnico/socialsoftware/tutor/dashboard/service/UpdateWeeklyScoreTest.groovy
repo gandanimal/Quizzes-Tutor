@@ -89,7 +89,6 @@ class UpdateWeeklyScoreTest extends SpockTest {
         quizQuestionRepository.save(quizQuestion)
     }
 
-    /*
 
     def "update weekly score"() {
         given:
@@ -381,7 +380,7 @@ class UpdateWeeklyScoreTest extends SpockTest {
         dashboardId << [null, 100]
     }
 
-     */
+
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}

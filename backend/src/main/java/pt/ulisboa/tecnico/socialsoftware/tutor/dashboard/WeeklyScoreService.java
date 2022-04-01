@@ -11,6 +11,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.WeeklyScore;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.dto.WeeklyScoreDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.SamePercentageRepository;
 
@@ -100,7 +103,6 @@ public class WeeklyScoreService {
   }
 
 
-  /*
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public void updateWeeklyScore(Integer dashboardId){
     if (dashboardId == null) {
@@ -111,7 +113,7 @@ public class WeeklyScoreService {
 
     TemporalAdjuster weekSunday = TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY);
     LocalDate currentWeek = DateHandler.now().with(weekSunday).toLocalDate();
-    if (dashboard.getWeeklyScores().stream().noneMatch(weeklyScore -> weeklyScore.getWeek.equals(currentWeek))){
+    if (dashboard.getWeeklyScores().stream().noneMatch(weeklyScore -> weeklyScore.getWeek().equals(currentWeek))){
       createWeeklyScore(dashboardId);
 
     }
@@ -123,16 +125,27 @@ public class WeeklyScoreService {
                     quizAnswer.getQuiz().getAvailableDate().toLocalDate().isBefore(currentWeek))
             .collect(Collectors.toSet());
     for(QuizAnswer quizAnswer : quizAnswerSet){
+      LocalDate answerWeek = quizAnswer.getAnswerDate().with(weekSunday).toLocalDate();
       LocalDate resultsWeek = quizAnswer.getQuiz().getResultsDate().with(weekSunday).toLocalDate();
-      if (dashboard.getWeeklyScores().stream().noneMatch(weeklyScore -> weeklyScore.getWeek.equals(resultsWeek))){
-        WeeklyScore weeklyScore = new WeeklyScore(dashboard, resultsWeek);
+      if (dashboard.getWeeklyScores().stream().noneMatch(weeklyScore -> weeklyScore.getWeek().equals(answerWeek))){
+        WeeklyScore weeklyScore = new WeeklyScore(dashboard, answerWeek);
         weeklyScoreRepository.save(weeklyScore);
+        if(resultsWeek.isBefore(currentWeek)){
+          weeklyScore.computeStatistics();
+        }
       }
+      if(resultsWeek.equals(currentWeek)){
+        List<WeeklyScore> tempWeeklyList = dashboard.getWeeklyScores().stream()
+                .filter(weeklyScore -> weeklyScore.getWeek().equals(answerWeek))
+                .collect(Collectors.toList());
+        tempWeeklyList.get(0).computeStatistics();
+      }
+
     }
 
     List<WeeklyScore> weeklyScoreList = new ArrayList<>(dashboard.getWeeklyScores());
     for(WeeklyScore weeklyScore : weeklyScoreList){
-      if(weeklyScore.getWeek.equals(currentWeek))
+      if(weeklyScore.getWeek().equals(currentWeek))
         weeklyScore.computeStatistics();
       if(weeklyScore.getNumberAnswered() == 0 && weeklyScore.isClosed())
         removeWeeklyScore(weeklyScore.getId());
@@ -144,8 +157,6 @@ public class WeeklyScoreService {
     dashboard.setLastCheckWeeklyScores(now);
 
   }
-
-   */
 
 
 }
