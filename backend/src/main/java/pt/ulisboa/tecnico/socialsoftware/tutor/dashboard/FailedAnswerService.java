@@ -22,6 +22,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.FailedAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 
 import java.sql.SQLException;
@@ -84,8 +85,68 @@ public class FailedAnswerService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void updateFailedAnswers(int dashboardId) {
-      //toDo
-    }
+    public void updateFailedAnswers(int dashboardId, String start, String end) {
+        Dashboard dashboard = dashboardRepository.findById(dashboardId).orElseThrow(() -> new TutorException(ErrorMessage.DASHBOARD_NOT_FOUND, dashboardId));
+        FailedAnswer failedAnswer;
+        Quiz quiz;
+        LocalDateTime resultsDate;
+        LocalDateTime creationDate;
+        LocalDateTime availableDate;
+        LocalDateTime conclusionDate;
+        LocalDateTime lastChecked = dashboard.getLastCheckFailedAnswers();
 
+        for (QuestionAnswer questionAnswer: questionAnswerRepository.findAll()){
+            quiz = questionAnswer.getQuizAnswer().getQuiz();
+            resultsDate = quiz.getResultsDate();
+            creationDate = questionAnswer.getQuizAnswer().getCreationDate();
+            availableDate = quiz.getAvailableDate();
+            conclusionDate = quiz.getConclusionDate();
+
+            if (!questionAnswer.isCorrect() && questionAnswer.getQuizAnswer().isCompleted()){
+                if (start == null  &&  end == null){
+                    if (quiz.getType() == Quiz.QuizType.IN_CLASS){
+                        if(DateHandler.now().isAfter(resultsDate)){
+                            failedAnswer = new FailedAnswer(dashboard, questionAnswer, DateHandler.now());
+                            failedAnswerRepository.save(failedAnswer);
+                            dashboard.setLastCheckFailedAnswers(creationDate.minusSeconds(1));
+                        }
+                        else {
+                            dashboard.setLastCheckFailedAnswers(creationDate.minusSeconds(1));
+                            continue;
+                        }
+                    }
+                    else if (creationDate.isBefore(lastChecked)){
+                        dashboard.setLastCheckFailedAnswers(creationDate.minusSeconds(1));
+                        continue;
+                    }
+                    else if (creationDate.isBefore(LocalDateTime.parse(start, DateTimeFormatter.ISO_DATE_TIME))){
+                        continue;
+                    }
+                    else {
+                        try {
+                            failedAnswer = new FailedAnswer(dashboard, questionAnswer, DateHandler.now());
+                        }catch (TutorException e){
+                            continue;
+                        }
+                        failedAnswerRepository.save(failedAnswer);
+                        if(lastChecked.isBefore(creationDate.minusSeconds(1))){
+                            dashboard.setLastCheckFailedAnswers(creationDate.minusSeconds(1));
+                        }
+                    }
+
+                }
+                else {
+                    try {
+                        failedAnswer = new FailedAnswer(dashboard, questionAnswer, DateHandler.now());
+                    }catch (TutorException e){
+                        continue;
+                    }
+                    failedAnswerRepository.save(failedAnswer);
+                    if(lastChecked.isBefore(creationDate.minusSeconds(1))){
+                        dashboard.setLastCheckFailedAnswers(creationDate.minusSeconds(1));
+                    }
+                }
+            }
+        }
+    }
 }
