@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.service
 
+
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.BeanConfiguration
@@ -27,7 +28,6 @@ class CreateWeeklyScoreTest extends SpockTest {
 
     def setup() {
         createExternalCourseAndExecution()
-
         student = new Student(USER_1_NAME, false)
         student.addCourse(externalCourseExecution)
         userRepository.save(student)

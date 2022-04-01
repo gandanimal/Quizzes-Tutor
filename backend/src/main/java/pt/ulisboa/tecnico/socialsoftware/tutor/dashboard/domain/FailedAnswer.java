@@ -132,10 +132,10 @@ public class FailedAnswer implements DomainEntity {
     @Override
     public String toString() {
         return "FailedAnswer{" +
-            "id=" + id +
-            ", answered=" + answered +
-            ", questionAnswer=" + questionAnswer +
-            "}";
+                "id=" + id +
+                ", answered=" + answered +
+                ", questionAnswer=" + questionAnswer +
+                "}";
     }
 
 }
