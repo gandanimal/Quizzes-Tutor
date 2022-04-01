@@ -67,5 +67,25 @@ public class FailedAnswerService {
         failedAnswerRepository.delete(toRemove);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public List<FailedAnswerDto> getFailedAnswers(int dashboardId) {
+        List<FailedAnswerDto> failedAnswerDtos = new ArrayList<>();
+        List<FailedAnswer> failedAnswers = new ArrayList<>();
+        Dashboard dashboard = dashboardRepository.findById(dashboardId).orElseThrow(() -> new TutorException(ErrorMessage.DASHBOARD_NOT_FOUND, dashboardId));
+
+        for (FailedAnswer fa : dashboard.getFailedAnswers()) {
+            failedAnswers.add(fa);
+        }
+
+        for (FailedAnswer a : failedAnswers) {
+          failedAnswerDtos.add(new FailedAnswerDto(a));
+        }
+        return failedAnswerDtos;
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void updateFailedAnswers(int dashboardId) {
+      //toDo
+    }
 
 }
