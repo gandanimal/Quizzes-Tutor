@@ -8,7 +8,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthTecnicoUser;
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser;
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.Dashboard;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.WeeklyScore;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
@@ -30,7 +29,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.domain.Tournament;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tournament.repository.TournamentRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.Dashboard;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.FailedAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.FailedAnswerRepository;
 
 import java.io.Serializable;
 
@@ -74,6 +76,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
 
     @Autowired
     private DashboardRepository dashboardRepository;
+
+    @Autowired
+    private FailedAnswerRepository failedAnswerRepository;
 
     @Autowired
     private WeeklyScoreRepository weeklyScoreRepository;
@@ -171,6 +176,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 case "DASHBOARD.ACCESS":
                     Dashboard dashboard = dashboardRepository.findById(id).orElse(null);
                     return dashboard.getStudent().getId().equals(userId);
+                case "FAILEDANSWER.ACCESS":
+                    FailedAnswer failedAnswer = failedAnswerRepository.findById(id).orElse(null);
+                    return failedAnswer.getDashboard().getStudent().getId().equals(userId);
                 case "WEEKLY_SCORE.ACCESS":
                     WeeklyScore weeklyScore = weeklyScoreRepository.findById(id).orElse(null);
                     return weeklyScore.getDashboard().getStudent().getId().equals(userId);
