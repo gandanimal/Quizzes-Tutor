@@ -34,7 +34,7 @@ class GetWeeklyScoreWebServiceIT extends SpockTest {
 
         when: 'the web service is invoked'
         response = restClient.get(
-                path: '/students/dashboards/' + dashboardDto.getId(),
+                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
                 requestContentType: 'application/json'
         )
 
@@ -55,7 +55,7 @@ class GetWeeklyScoreWebServiceIT extends SpockTest {
 
         when: 'the web service is invoked'
         response = restClient.get(
-                path: '/students/dashboards/' + dashboardDto.getId(),
+                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
                 requestContentType: 'application/json'
         )
 
@@ -75,7 +75,7 @@ class GetWeeklyScoreWebServiceIT extends SpockTest {
 
         when: 'the web service is invoked'
         response = restClient.get(
-                path: '/students/dashboards/' + dashboardDto.getId(),
+                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
                 requestContentType: 'application/json'
         )
 

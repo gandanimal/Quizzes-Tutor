@@ -22,7 +22,7 @@ public class WeeklyScoreController {
         this.weeklyScoreService = weeklyScoreService;
     }
     //get Rest
-    @GetMapping("/students/dashboards/{dashboardId}")
+    @GetMapping("/students/dashboards/weeklyScores/{dashboardId}")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#dashboardId, 'DASHBOARD.ACCESS')")
     public List<WeeklyScoreDto> getWeeklyScore(Principal principal, @PathVariable int dashboardId){
         return this.weeklyScoreService.getWeeklyScores(dashboardId);
