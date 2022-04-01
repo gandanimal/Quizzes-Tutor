@@ -28,6 +28,8 @@ class UpdateWeeklyScoreWebServiceIT extends SpockTest {
     }
 
     def "demo student updates its weekly scores"() {
+
+        
     }
 
     def "demo teacher does not have access"() {
@@ -53,7 +55,7 @@ class UpdateWeeklyScoreWebServiceIT extends SpockTest {
         demoNewStudentLogin()
 
         when: 'the web service is invoked'
-        response = restClient.get(
+        response = restClient.put(
                 path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
                 requestContentType: 'application/json'
         )
