@@ -15,12 +15,15 @@ public class FailedAnswerDto implements Serializable {
 
     private QuestionAnswerDto questionAnswerDto;
 
+    private String collectedDto;
+
     public FailedAnswerDto(){
     }
 
     public FailedAnswerDto(FailedAnswer failedAnswer){
         setAnswered(failedAnswer.getAnswered());
         setQuestionAnswerDto(new QuestionAnswerDto(failedAnswer.getQuestionAnswer()));
+        setCollectedDto(failedAnswer.getCollected());
     }
 
     public Integer getId() {
@@ -41,6 +44,14 @@ public class FailedAnswerDto implements Serializable {
 
     public void setQuestionAnswerDto(QuestionAnswerDto questionAnswerDto) {
         this.questionAnswerDto = questionAnswerDto;
+    }
+
+    public void setCollectedDto(LocalDateTime collected) {
+        collectedDto = collected.toString();
+    }
+
+    public String getCollected() {
+        return collectedDto;
     }
 
     @Override
