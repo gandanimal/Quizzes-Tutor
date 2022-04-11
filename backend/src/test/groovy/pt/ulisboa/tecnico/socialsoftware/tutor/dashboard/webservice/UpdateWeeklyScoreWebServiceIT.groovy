@@ -1,3 +1,4 @@
+
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.webservice
 
 import groovyx.net.http.HttpResponseException
@@ -27,60 +28,66 @@ class UpdateWeeklyScoreWebServiceIT extends SpockTest {
         dashboardDto = dashboardService.getDashboard(courseExecutionDto.getCourseExecutionId(), authUserDto.getId())
     }
 
-    def "demo student updates its weekly scores"() {
-        given: 'demo student'
+    def "demo student gets its weekly scores"() {
+        given:
         demoStudentLogin()
 
-        when: 'when the update web service is invoked'
+        when:
         response = restClient.put(
-                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
+                path: '/students/dashboards/' + dashboardDto.getId() + '/weeklyscores',
                 requestContentType: 'application/json'
         )
 
-        then: "the request is accepted"
-        response != null
+        then:
         response.status == 200
-        and: "the repository is not empty"
-        weeklyScoreRepository.findAll().size() != 0
+        and:
+        weeklyScoreRepository.findAll().size() == 1
 
         cleanup:
         weeklyScoreRepository.deleteAll()
+        dashboardRepository.deleteAll()
     }
 
     def "demo teacher does not have access"() {
-        given: 'demo teacher'
+        given:
         demoTeacherLogin()
 
-        when: 'the web service is invoked'
+        when:
         response = restClient.put(
-                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
+                path: '/students/dashboards/' + dashboardDto.getId() + '/weeklyscores',
                 requestContentType: 'application/json'
         )
 
-        then: "request returns 403 because teacher does not have access to a student dashboard"
+        then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
+        and:
+        weeklyScoreRepository.findAll().size() == 0
 
         cleanup:
         weeklyScoreRepository.deleteAll()
+        dashboardRepository.deleteAll()
     }
 
-    def "student cant update another students weekly score"() {
-        given: 'a different new demo student'
-        demoNewStudentLogin()
+    def "student cant update another students failed answers"() {
+        given:
+        demoStudentLogin(true)
 
-        when: 'the web service is invoked'
+        when:
         response = restClient.put(
-                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
+                path: '/students/dashboards/' + dashboardDto.getId() + '/weeklyscores',
                 requestContentType: 'application/json'
         )
 
-        then: "request returns 403 because uses does not have access to another student dashboard"
+        then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
+        and:
+        weeklyScoreRepository.findAll().size() == 0
 
         cleanup:
         weeklyScoreRepository.deleteAll()
+        dashboardRepository.deleteAll()
     }
 
 }
