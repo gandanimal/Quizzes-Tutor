@@ -8,6 +8,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthTecnicoUser;
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.WeeklyScore;
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Reply;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.repository.DiscussionRepository;
@@ -77,6 +79,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
 
     @Autowired
     private FailedAnswerRepository failedAnswerRepository;
+
+    @Autowired
+    private WeeklyScoreRepository weeklyScoreRepository;
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
@@ -174,6 +179,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 case "FAILEDANSWER.ACCESS":
                     FailedAnswer failedAnswer = failedAnswerRepository.findById(id).orElse(null);
                     return failedAnswer.getDashboard().getStudent().getId().equals(userId);
+                case "WEEKLY_SCORE.ACCESS":
+                    WeeklyScore weeklyScore = weeklyScoreRepository.findById(id).orElse(null);
+                    return weeklyScore.getDashboard().getStudent().getId().equals(userId);
                 default: return false;
             }
         }

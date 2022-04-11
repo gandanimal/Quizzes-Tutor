@@ -13,4 +13,3 @@ import java.util.Set;
 @Transactional
 public interface FailedAnswerRepository extends JpaRepository<FailedAnswer, Integer> {
 }
-

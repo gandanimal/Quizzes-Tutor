@@ -25,8 +25,8 @@ HELP.md
 /.nb-gradle/
 /build/
 
-
 application-dev.properties
+application-test-int.properties
 application-prod.properties
 
 ### images location ###
