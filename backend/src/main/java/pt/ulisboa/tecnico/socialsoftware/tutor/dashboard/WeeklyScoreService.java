@@ -15,8 +15,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.SamePercentageRepository;
-
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
