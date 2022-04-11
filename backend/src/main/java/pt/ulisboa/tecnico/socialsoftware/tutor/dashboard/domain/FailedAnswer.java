@@ -1,13 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.dto.FailedAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
+
 
 import java.time.LocalDateTime;
 
@@ -132,10 +131,9 @@ public class FailedAnswer implements DomainEntity {
     @Override
     public String toString() {
         return "FailedAnswer{" +
-                "id=" + id +
-                ", answered=" + answered +
-                ", questionAnswer=" + questionAnswer +
-                "}";
+            "id=" + id +
+            ", answered=" + answered +
+            ", questionAnswer=" + questionAnswer +
+            "}";
     }
-
 }

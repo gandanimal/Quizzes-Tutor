@@ -1,11 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.dto;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuestionAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.FailedAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 
 public class FailedAnswerDto implements Serializable {
 
@@ -13,21 +12,26 @@ public class FailedAnswerDto implements Serializable {
 
     private boolean answered;
 
-    private QuestionAnswerDto questionAnswerDto;
+    private String collected;
 
-    private String collectedDto;
+    private QuestionAnswerDto questionAnswerDto;
 
     public FailedAnswerDto(){
     }
 
     public FailedAnswerDto(FailedAnswer failedAnswer){
+        setId(failedAnswer.getId());
         setAnswered(failedAnswer.getAnswered());
+        setCollected(DateHandler.toISOString(failedAnswer.getCollected()));
         setQuestionAnswerDto(new QuestionAnswerDto(failedAnswer.getQuestionAnswer()));
-        setCollectedDto(failedAnswer.getCollected());
     }
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public boolean getAnswered() {
@@ -38,20 +42,20 @@ public class FailedAnswerDto implements Serializable {
         this.answered = answered;
     }
 
+    public String getCollected() {
+        return collected;
+    }
+
+    public void setCollected(String collected) {
+        this.collected = collected;
+    }
+
     public QuestionAnswerDto getQuestionAnswerDto() {
         return questionAnswerDto;
     }
 
     public void setQuestionAnswerDto(QuestionAnswerDto questionAnswerDto) {
         this.questionAnswerDto = questionAnswerDto;
-    }
-
-    public void setCollectedDto(LocalDateTime collected) {
-        collectedDto = collected.toString();
-    }
-
-    public String getCollected() {
-        return collectedDto;
     }
 
     @Override

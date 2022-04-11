@@ -9,7 +9,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.Dashboard
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.service.FailedAnswersSpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.FailedAnswerRepository
 
 import java.time.LocalDateTime
 
@@ -49,19 +48,17 @@ class RemoveFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
         createdUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
 
         when:
-        response = restClient.delete( path:'/students/dashboards/failedAnswer/' + failedAnswer.getId(), requestContentType: 'application/json')
+        response = restClient.delete(
+                path: '/students/failedanswers/' + failedAnswer.getId(),
+                requestContentType: 'application/json'
+        )
 
         then:
+        response != null
         response.status == 200
-        and:
-        FailedAnswerRepository.findAll().size() == 1
 
-        cleanup:
-        failedAnswerRepository.deleteAll();
-        dashboardRepository.deleteAll();
-        userRepository.deleteAll();
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
-        courseRepository.deleteById(externalCourse.getId())
+        and:
+        failedAnswerRepository.findAll().size() == 0
     }
 
     def "teacher can't get remove student's failed answers from dashboard"() {
@@ -69,37 +66,40 @@ class RemoveFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
         demoTeacherLogin()
 
         when:
-        response = restClient.delete( path:'/students/dashboards/failedAnswer/' + failedAnswer.getId(), requestContentType: 'application/json')
+        response = restClient.delete(
+                path: '/students/failedanswers/' + failedAnswer.getId(),
+                requestContentType: 'application/json'
+        )
 
         then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
-
-        cleanup:
-        failedAnswerRepository.deleteAll();
-        dashboardRepository.deleteAll();
-        userRepository.deleteAll();
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
-        courseRepository.deleteById(externalCourse.getId())
     }
 
     def "student can't get another student's failed answers from dashboard"() {
         given:
-        demoStudentLogin()
+        def newStudent = new Student(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, false, AuthUser.Type.EXTERNAL)
+        newStudent.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
+        userRepository.save(newStudent)
+        createdUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
 
         when:
-        response = restClient.delete( path:'/students/dashboards/failedAnswer/' + failedAnswer.getId(), requestContentType: 'application/json')
+        response = restClient.delete(
+                path: '/students/failedanswers/' + failedAnswer.getId(),
+                requestContentType: 'application/json'
+        )
 
         then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
-
-        cleanup:
-        failedAnswerRepository.deleteAll();
-        dashboardRepository.deleteAll();
-        userRepository.deleteAll();
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
-        courseRepository.deleteById(externalCourse.getId())
     }
+
+    def cleanup(){
+        failedAnswerRepository.deleteAll()
+        dashboardRepository.deleteAll()
+        userRepository.deleteAll()
+        courseRepository.deleteAll()
+    }
+
 
 }

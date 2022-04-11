@@ -26,12 +26,13 @@ class FailedAnswersSpockTest extends SpockTest {
     def option
     def optionKO
 
-    def createQuiz(count) {
+    def createQuiz(count, type = Quiz.QuizType.PROPOSED.toString()) {
         def quiz = new Quiz()
         quiz.setKey(count)
         quiz.setTitle("Quiz Title")
-        quiz.setType(Quiz.QuizType.PROPOSED.toString())
+        quiz.setType(type)
         quiz.setCourseExecution(externalCourseExecution)
+        quiz.setCreationDate(DateHandler.now())
         quiz.setAvailableDate(DateHandler.now())
         quizRepository.save(quiz)
         return quiz
@@ -73,6 +74,8 @@ class FailedAnswersSpockTest extends SpockTest {
     def answerQuiz(answered, correct, completed, question, quiz, date = LocalDateTime.now()) {
         def quizAnswer = new QuizAnswer()
         quizAnswer.setCompleted(completed)
+        quizAnswer.setCreationDate(date)
+        quizAnswer.setAnswerDate(date)
         quizAnswer.setStudent(student)
         quizAnswer.setQuiz(quiz)
         quizAnswerRepository.save(quizAnswer)
