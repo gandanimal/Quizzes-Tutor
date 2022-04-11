@@ -9,7 +9,6 @@ import org.springframework.boot.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.Dashboard
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.service.FailedAnswersSpockTest
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.FailedAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student
 
 import java.time.LocalDateTime
@@ -43,22 +42,27 @@ class GetFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
     }
 
     def "student gets failed answers"() {
+        given:
         createdUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
+        and:
+        def questionAnswer = answerQuiz(true, false, true, quizQuestion, quiz)
+        def answer = createFailedAnswer(questionAnswer, LocalDateTime.now())
 
         when:
-        response = restClient.get( path:'/students/dashboards/failedAnswer/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get(
+                path: '/students/dashboards/' + dashboard.getId() + '/failedanswers/',
+                requestContentType: 'application/json'
+        )
 
         then:
+        response != null
         response.status == 200
+        response.data.id != null
         and:
-        FailedAnswerRepository.findAll().size() == 1
-
-        cleanup:
-        failedAnswerRepository.deleteAll();
-        dashboardRepository.deleteAll();
-        userRepository.deleteAll();
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
-        courseRepository.deleteById(externalCourse.getId())
+        failedAnswerRepository.findAll().size() == 1
+        and:
+        def failedAnswer = response.data.get(0)
+        failedAnswer.id == answer.getId()
     }
 
     def "teacher can't get student's failed answers"() {
@@ -66,37 +70,40 @@ class GetFailedAnswersWebServiceIT extends FailedAnswersSpockTest {
         demoTeacherLogin()
 
         when:
-        response = restClient.get( path:'/students/dashboards/failedAnswer/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get(
+                path: '/students/dashboards/' + dashboard.getId() + '/failedanswers/',
+                requestContentType: 'application/json'
+        )
 
         then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
-
-        cleanup:
-        failedAnswerRepository.deleteAll();
-        dashboardRepository.deleteAll();
-        userRepository.deleteAll();
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
-        courseRepository.deleteById(externalCourse.getId())
     }
 
     def "student can't get another student's failed answers"() {
         given:
-        demoStudentLogin()
+        def newStudent = new Student(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, false, AuthUser.Type.EXTERNAL)
+        newStudent.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
+        userRepository.save(newStudent)
+        createdUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
+        and:
+        def questionAnswer = answerQuiz(true, false, true, quizQuestion, quiz)
+        createFailedAnswer(questionAnswer, LocalDateTime.now())
 
         when:
-        response = restClient.get( path:'/students/dashboards/failedAnswer/' + dashboard.getId(), requestContentType: 'application/json')
+        response = restClient.get(
+                path: '/students/dashboards/' + dashboard.getId() + '/failedanswers/',
+                requestContentType: 'application/json'
+        )
 
         then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
-
-        cleanup:
-        failedAnswerRepository.deleteAll();
-        dashboardRepository.deleteAll();
-        userRepository.deleteAll();
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
-        courseRepository.deleteById(externalCourse.getId())
     }
 
+    def cleanup(){
+        dashboardRepository.deleteAll()
+        userRepository.deleteAll()
+        courseRepository.deleteAll()
+    }
 }
