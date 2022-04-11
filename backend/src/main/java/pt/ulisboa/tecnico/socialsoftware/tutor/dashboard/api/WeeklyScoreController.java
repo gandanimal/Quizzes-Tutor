@@ -35,7 +35,7 @@ public class WeeklyScoreController {
     }
     //Update Rest
     @PutMapping("/students/dashboards/weeklyScores/{dashboardId}")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#weeklyScoreId, 'DASHBOARD.ACCESS')")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#dashboardId, 'DASHBOARD.ACCESS')")
     public void updateWeeklyScore(Principal principal, @PathVariable int dashboardId){
         this.weeklyScoreService.updateWeeklyScore(dashboardId);
     }

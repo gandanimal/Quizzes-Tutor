@@ -28,8 +28,23 @@ class UpdateWeeklyScoreWebServiceIT extends SpockTest {
     }
 
     def "demo student updates its weekly scores"() {
+        given: 'demo student'
+        demoStudentLogin()
 
-        
+        when: 'when the update web service is invoked'
+        response = restClient.put(
+                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
+                requestContentType: 'application/json'
+        )
+
+        then: "the request is accepted"
+        response != null
+        response.status == 200
+        and: "the repository is not empty"
+        weeklyScoreRepository.findAll().size() != 0
+
+        cleanup:
+        weeklyScoreRepository.deleteAll()
     }
 
     def "demo teacher does not have access"() {
