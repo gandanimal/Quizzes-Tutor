@@ -8,9 +8,9 @@ import org.springframework.boot.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.Dashboard
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.WeeklyScore
+import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.service.FailedAnswersSpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler
-import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -19,15 +19,13 @@ import java.time.temporal.TemporalAdjuster
 import java.time.temporal.TemporalAdjusters
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class RemoveWeeklyScoreWebServiceIT extends SpockTest {
+class RemoveWeeklyScoreWebServiceIT extends FailedAnswersSpockTest {
     @LocalServerPort
     private int port
 
     def response
     def courseExecution
     def weeklyScore
-    def dashboard
-    def student
 
     def setup() {
         given:
@@ -49,74 +47,60 @@ class RemoveWeeklyScoreWebServiceIT extends SpockTest {
         weeklyScoreRepository.save(weeklyScore)
     }
 
-
     def "student removes weekly score"() {
-        given: 'a demo student'
-        createdUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
+        given:
+        createdUserLogin(USER_1_EMAIL, USER_1_PASSWORD)
 
-        when: 'web service is invoked'
+        when:
         response = restClient.delete(
-                path: '/students/weeklyScores/' + weeklyScore.getId(),
+                path: '/students/weeklyscores/' + weeklyScore.getId(),
                 requestContentType: 'application/json'
         )
 
-        then: "check response status"
+        then:
+        response != null
         response.status == 200
-        and: "the weeklyScore was removed from the database"
-        weeklyScoreRepository.findById(weeklyScore.getId()).isEmpty()
-
-        cleanup:
-        weeklyScoreRepository.deleteAll()
-        dashboardRepository.deleteAll()
-        userRepository.deleteAll()
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
+        and:
+        weeklyScoreRepository.findAll().size() == 0
     }
 
-
-    def "teacher can't remove student's weekly score from dashboard"() {
-        given: 'a teacher student'
+    def "teacher can't get remove student's weekly score from dashboard"() {
+        given: 'a teacher login'
         demoTeacherLogin()
 
-        when: 'web service is invoked'
+        when:
         response = restClient.delete(
-                path: '/students/weeklyScores/' + weeklyScore.getId(),
+                path: '/students/weeklyscores/' + weeklyScore.getId(),
                 requestContentType: 'application/json'
         )
 
-        then: "request replies 403 - teacher does not have access"
+        then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
-        and: "weeklyScore is not deleted from database"
-        weeklyScoreRepository.findAll().get(0).getId() == weeklyScore.getId()
-
-        cleanup:
-        weeklyScoreRepository.deleteAll()
-        dashboardRepository.deleteAll()
-        userRepository.deleteAll()
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
     }
 
-    def "student can't remove another student's weekly score from dashboard"() {
-        given: 'a teacher student'
-        demoNewStudentLogin()
+    def "student can't get another student's weekly score from dashboard"() {
+        given:
+        def newStudent = new Student(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, false, AuthUser.Type.EXTERNAL)
+        newStudent.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
+        userRepository.save(newStudent)
+        createdUserLogin(USER_2_EMAIL, USER_2_PASSWORD)
 
-        when: 'web service is invoked'
+        when:
         response = restClient.delete(
-                path: '/students/weeklyScores/' + weeklyScore.getId(),
+                path: '/students/weeklyscores/' + weeklyScore.getId(),
                 requestContentType: 'application/json'
         )
 
-        then: "request replies 403 - new student does not have access"
+        then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
-        and: "weeklyScore is not deleted from database"
-        weeklyScoreRepository.findAll().get(0).getId() == weeklyScore.getId()
+    }
 
-        cleanup:
+    def cleanup(){
         weeklyScoreRepository.deleteAll()
         dashboardRepository.deleteAll()
         userRepository.deleteAll()
-        courseExecutionRepository.deleteById(externalCourseExecution.getId())
+        courseRepository.deleteAll()
     }
-
 }

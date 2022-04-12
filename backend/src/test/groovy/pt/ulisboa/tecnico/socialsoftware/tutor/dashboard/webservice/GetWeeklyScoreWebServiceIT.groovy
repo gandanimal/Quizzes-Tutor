@@ -1,3 +1,4 @@
+
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.webservice
 
 import groovyx.net.http.HttpResponseException
@@ -25,66 +26,69 @@ class GetWeeklyScoreWebServiceIT extends SpockTest {
         courseExecutionDto = courseService.getDemoCourse()
         authUserDto = authUserService.demoStudentAuth(false).getUser()
         dashboardDto = dashboardService.getDashboard(courseExecutionDto.getCourseExecutionId(), authUserDto.getId())
-        weeklyScoreService.createWeeklyScore(dashboardDto.getId())
+        weeklyScoreService.updateWeeklyScore(dashboardDto.getId())
     }
 
     def "demo student gets weekly scores"() {
-        given: 'a demo student'
+        given:
         demoStudentLogin()
 
-        when: 'the web service is invoked'
+        when:
         response = restClient.get(
-                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
+                path: '/students/dashboards/' + dashboardDto.getId() + '/weeklyscores',
                 requestContentType: 'application/json'
         )
 
-        then: "the request returns 200 - success"
+        then:
         response.status == 200
-        and: "has value"
+        and:
         response.data.id != null
-        and: 'it is in the database'
-        weeklyScoreRepository.findAll().size() == 1
-
+        response.data.size() == 1
+        response.data.get(0).id != null
+        response.data.get(0).numberAnswered == 0
+        response.data.get(0).uniquelyAnswered == 0
+        response.data.get(0).percentageCorrect == 0
         cleanup:
         weeklyScoreRepository.deleteAll()
+        dashboardRepository.deleteAll()
     }
 
     def "demo teacher does not have access"() {
-        given: 'demo teacher'
+        given:
         demoTeacherLogin()
 
-        when: 'the web service is invoked'
+        when:
         response = restClient.get(
-                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
+                path: '/students/dashboards/' + dashboardDto.getId() + '/weeklyscores',
                 requestContentType: 'application/json'
         )
 
-        then: "request returns 403 because teacher does not have access to a student dashboard"
+        then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
 
         cleanup:
         weeklyScoreRepository.deleteAll()
-
-
+        dashboardRepository.deleteAll()
     }
 
     def "new demo student does not have access"() {
-        given: 'a different new demo student'
-        demoNewStudentLogin()
+        given:
+        demoStudentLogin(true)
 
-        when: 'the web service is invoked'
+        when:
         response = restClient.get(
-                path: '/students/dashboards/weeklyScores/' + dashboardDto.getId(),
+                path: '/students/dashboards/' + dashboardDto.getId() + '/weeklyscores',
                 requestContentType: 'application/json'
         )
 
-        then: "request returns 403 because uses does not have access to another student dashboard"
+        then:
         def error = thrown(HttpResponseException)
         error.response.status == HttpStatus.SC_FORBIDDEN
 
         cleanup:
         weeklyScoreRepository.deleteAll()
+        dashboardRepository.deleteAll()
     }
 
 }
