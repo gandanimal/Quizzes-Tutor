@@ -309,18 +309,10 @@ class SpockTest extends Specification {
         restClient.headers['Authorization']  = "Bearer " + loginResponse.data.token
     }
 
-    def demoStudentLogin() {
+    def demoStudentLogin(create = false) {
         def loginResponse = restClient.get(
                 path: '/auth/demo/student',
-                query: ['createNew': false]
-        )
-        restClient.headers['Authorization']  = "Bearer " + loginResponse.data.token
-    }
-
-    def demoNewStudentLogin() {
-        def loginResponse = restClient.get(
-                path: '/auth/demo/student',
-                query: ['createNew': true]
+                query: ['createNew': create]
         )
         restClient.headers['Authorization']  = "Bearer " + loginResponse.data.token
     }

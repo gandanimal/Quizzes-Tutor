@@ -179,9 +179,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 case "FAILEDANSWER.ACCESS":
                     FailedAnswer failedAnswer = failedAnswerRepository.findById(id).orElse(null);
                     return failedAnswer.getDashboard().getStudent().getId().equals(userId);
-                case "WEEKLY_SCORE.ACCESS":
+                case "WEEKLYSCORE.ACCESS":
                     WeeklyScore weeklyScore = weeklyScoreRepository.findById(id).orElse(null);
-                    return weeklyScore.getDashboard().getStudent().getId().equals(userId);
+                    return weeklyScore != null && weeklyScore.getDashboard().getStudent().getId().equals(userId);
                 default: return false;
             }
         }

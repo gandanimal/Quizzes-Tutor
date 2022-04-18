@@ -4,16 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.WeeklyScoreService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.dto.WeeklyScoreDto;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
 public class WeeklyScoreController {
+    private static final Logger logger = LoggerFactory.getLogger(WeeklyScoreController.class);
 
     @Autowired
     private WeeklyScoreService weeklyScoreService;
@@ -21,22 +20,23 @@ public class WeeklyScoreController {
     WeeklyScoreController(WeeklyScoreService weeklyScoreService) {
         this.weeklyScoreService = weeklyScoreService;
     }
-    //get Rest
-    @GetMapping("/students/dashboards/weeklyScores/{dashboardId}")
+
+    @GetMapping("/students/dashboards/{dashboardId}/weeklyscores")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#dashboardId, 'DASHBOARD.ACCESS')")
-    public List<WeeklyScoreDto> getWeeklyScore(Principal principal, @PathVariable int dashboardId){
-        return this.weeklyScoreService.getWeeklyScores(dashboardId);
+    public List<WeeklyScoreDto> getWeeklyScores(@PathVariable Integer dashboardId) {
+        return weeklyScoreService.getWeeklyScores(dashboardId);
     }
-    //Delete Rest
-    @DeleteMapping("/students/weeklyScores/{weeklyScoreId}")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#weeklyScoreId, 'WEEKLY_SCORE.ACCESS')")
-    public void removeWeeklyScore(Principal principal, @PathVariable int weeklyScoreId){
-        this.weeklyScoreService.removeWeeklyScore(weeklyScoreId);
-    }
-    //Update Rest
-    @PutMapping("/students/dashboards/weeklyScores/{dashboardId}")
+
+    @PutMapping("/students/dashboards/{dashboardId}/weeklyscores")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#dashboardId, 'DASHBOARD.ACCESS')")
-    public void updateWeeklyScore(Principal principal, @PathVariable int dashboardId){
-        this.weeklyScoreService.updateWeeklyScore(dashboardId);
+    public void updateWeeklyScores(@PathVariable Integer dashboardId) {
+        weeklyScoreService.updateWeeklyScore(dashboardId);
     }
+
+    @DeleteMapping("/students/weeklyscores/{weeklysScoreId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#weeklysScoreId, 'WEEKLYSCORE.ACCESS')")
+    public void deleteWeeklyScore(@PathVariable Integer weeklysScoreId) {
+        weeklyScoreService.removeWeeklyScore(weeklysScoreId);
+    }
+
 }
