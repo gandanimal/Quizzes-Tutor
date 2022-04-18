@@ -168,7 +168,8 @@ public enum ErrorMessage {
     FAILED_ANSWER_MISSING_END_TIME("Failed answer filter requires the definition of the end date"),
     FAILED_ANSWER_ALREADY_CREATED("Failed answer already created"),
     CANNOT_CREATE_FAILED_ANSWER("Cannot create failed answer"),
-    CANNOT_REMOVE_FAILED_ANSWER("Cannot remove failed answer");
+    CANNOT_REMOVE_FAILED_ANSWER("Cannot remove failed answer"),
+    CANNOT_CLOSE_CURRENT_WEEK("Cannot close current week");
 
     public final String label;
 

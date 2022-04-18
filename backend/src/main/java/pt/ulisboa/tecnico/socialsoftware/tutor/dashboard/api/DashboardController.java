@@ -30,5 +30,4 @@ public class DashboardController {
 
         return this.dashboardService.getDashboard(courseExecutionId, studentId);
     }
-
 }

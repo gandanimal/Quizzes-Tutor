@@ -16,4 +16,4 @@ import java.util.Set;
 @Repository
 @Transactional
 public interface DifficultQuestionRepository extends JpaRepository<DifficultQuestion, Integer> {
-   }
+}
