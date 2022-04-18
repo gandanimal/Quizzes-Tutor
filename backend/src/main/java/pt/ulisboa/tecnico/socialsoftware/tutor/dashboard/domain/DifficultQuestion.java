@@ -127,5 +127,4 @@ public class DifficultQuestion implements DomainEntity {
                 ", question=" + question +
                 "}";
     }
-
 }
