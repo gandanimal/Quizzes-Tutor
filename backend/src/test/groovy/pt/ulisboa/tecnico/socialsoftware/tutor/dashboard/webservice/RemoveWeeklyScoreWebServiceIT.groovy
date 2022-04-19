@@ -49,7 +49,7 @@ class RemoveWeeklyScoreWebServiceIT extends FailedAnswersSpockTest {
 
     def "student removes weekly score"() {
         given:
-        createdUserLogin(USER_1_EMAIL, USER_1_PASSWORD)
+        createdUserLogin(USER_1_USERNAME, USER_1_PASSWORD)
 
         when:
         response = restClient.delete(
@@ -84,7 +84,7 @@ class RemoveWeeklyScoreWebServiceIT extends FailedAnswersSpockTest {
         def newStudent = new Student(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, false, AuthUser.Type.EXTERNAL)
         newStudent.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
         userRepository.save(newStudent)
-        createdUserLogin(USER_2_EMAIL, USER_2_PASSWORD)
+        createdUserLogin(USER_2_USERNAME, USER_2_PASSWORD)
 
         when:
         response = restClient.delete(
