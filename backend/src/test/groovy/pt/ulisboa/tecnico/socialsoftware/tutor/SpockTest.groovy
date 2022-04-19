@@ -12,9 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DashboardService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.WeeklyScoreService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DifficultQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.WeeklyScoreService
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.SameDifficulty
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DifficultQuestionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.SameDifficultyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.FailedAnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository
@@ -180,9 +178,6 @@ class SpockTest extends Specification {
     WeeklyScoreRepository weeklyScoreRepository
 
     @Autowired
-    SameDifficultyRepository sameDifficultyRepository
-
-    @Autowired
     DifficultQuestionService difficultQuestionService
 
     @Autowired
@@ -305,18 +300,10 @@ class SpockTest extends Specification {
         restClient.headers['Authorization']  = "Bearer " + loginResponse.data.token
     }
 
-    def demoStudentLogin() {
+    def demoStudentLogin(create = false) {
         def loginResponse = restClient.get(
                 path: '/auth/demo/student',
-                query: ['createNew': false]
-        )
-        restClient.headers['Authorization']  = "Bearer " + loginResponse.data.token
-    }
-
-    def demoNewStudentLogin() {
-        def loginResponse = restClient.get(
-                path: '/auth/demo/student',
-                query: ['createNew': true]
+                query: ['createNew': create]
         )
         restClient.headers['Authorization']  = "Bearer " + loginResponse.data.token
     }
