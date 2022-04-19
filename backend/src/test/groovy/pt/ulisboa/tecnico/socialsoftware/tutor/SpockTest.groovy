@@ -12,9 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DashboardService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.WeeklyScoreService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.DifficultQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.WeeklyScoreService
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.SameDifficulty
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DifficultQuestionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.SameDifficultyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.WeeklyScoreRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.FailedAnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.repository.DashboardRepository
