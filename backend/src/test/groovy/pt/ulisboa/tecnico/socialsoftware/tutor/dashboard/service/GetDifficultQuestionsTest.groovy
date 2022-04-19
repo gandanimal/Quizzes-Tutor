@@ -15,11 +15,15 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler
 import spock.lang.Unroll
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CANNOT_REMOVE_DIFFICULT_QUESTION
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.DIFFICULT_QUESTION_NOT_FOUND
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.temporal.TemporalAdjuster
+import java.time.temporal.TemporalAdjusters
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.DASHBOARD_NOT_FOUND
 
 @DataJpaTest
-class RemoveDifficultQuestionTest extends SpockTest {
+class GetDifficultQuestionsTest extends SpockTest {
     def student
     def dashboard
     def question
@@ -64,59 +68,54 @@ class RemoveDifficultQuestionTest extends SpockTest {
         dashboardRepository.save(dashboard)
     }
 
-    def "student removes a difficult question"() {
+    def "get difficult question"() {
         given:
         def difficultQuestion = new DifficultQuestion(dashboard, question, 24)
         difficultQuestionRepository.save(difficultQuestion)
 
         when:
-        difficultQuestionService.removeDifficultQuestion(difficultQuestion.getId())
+        def difficultQuestions = difficultQuestionService.getDifficultQuestions(dashboard.getId())
 
         then:
-        difficultQuestionRepository.count() == 1
+        difficultQuestions.size() == 1
         and:
-        def result = difficultQuestionRepository.findAll().get(0)
-        result.getId() == difficultQuestion.getId()
-        result.isRemoved() == true
-        result.getRemovedDate().isAfter(DateHandler.now().minusSeconds(30))
+        def resultDifficultQuestion = difficultQuestions.get(0)
+        resultDifficultQuestion.getId() == difficultQuestion.getId()
+        resultDifficultQuestion.getPercentage() == 24
+        resultDifficultQuestion.getRemovedDate() == null
+        !resultDifficultQuestion.isRemoved()
+        resultDifficultQuestion.getQuestionDto().getId() == question.getId()
     }
 
-    def "cannot remove a removed difficult question"() {
+    def "does not get removed difficult questions"() {
         given:
-        def now = DateHandler.now()
-        and:
         def difficultQuestion = new DifficultQuestion(dashboard, question, 24)
+        difficultQuestion.setRemovedDate(DateHandler.now().minusDays(3))
         difficultQuestion.setRemoved(true)
-        difficultQuestion.setRemovedDate(now)
         difficultQuestionRepository.save(difficultQuestion)
 
         when:
-        difficultQuestionService.removeDifficultQuestion(difficultQuestion.getId())
+        def difficultQuestions = difficultQuestionService.getDifficultQuestions(dashboard.getId())
 
         then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == CANNOT_REMOVE_DIFFICULT_QUESTION
-        and:
-        difficultQuestionRepository.count() == 1
-        and:
-        def result = difficultQuestionRepository.findAll().get(0)
-        result.isRemoved() == true
-        result.getRemovedDate().equals(now)
+        difficultQuestions.size() == 0
     }
 
     @Unroll
-    def "the difficult question cannot be deleted because invalid difficultQuestionId #id"() {
+    def "cannot get difficult questions because invalid dashboard #id"() {
         when:
-        difficultQuestionService.removeDifficultQuestion(id)
+        difficultQuestionService.getDifficultQuestions(id)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == DIFFICULT_QUESTION_NOT_FOUND
+        exception.getErrorMessage() == errorMessage
 
         where:
-        id  << [0, 100]
+        id  || errorMessage
+        0   || DASHBOARD_NOT_FOUND
+        100 || DASHBOARD_NOT_FOUND
     }
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
-} 
+}
