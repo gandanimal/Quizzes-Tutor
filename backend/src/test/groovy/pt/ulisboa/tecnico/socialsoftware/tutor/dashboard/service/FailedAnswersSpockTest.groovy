@@ -8,7 +8,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceStatemen
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementAnswerDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementQuizDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.FailedAnswer
-import pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain.SameQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.MultipleChoiceQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
