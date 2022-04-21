@@ -26,6 +26,7 @@ import QuestionQuery from '@/models/management/QuestionQuery';
 import { FraudScores } from '@/models/management/fraud/FraudScores';
 import { QuizFraudInformation } from '@/models/management/fraud/QuizFraudInformation';
 import Dashboard from "@/models/dashboard/Dashboard";
+import FailedAnswer from "@/models/dashboard/FailedAnswer";
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -198,6 +199,49 @@ export default class RemoteServices {
       });
   }
 
+  // FailedAnswers Controller
+
+  static async getFailedAnswers(dashboardId: number): Promise<FailedAnswer[]> {
+    return httpClient
+      .get(
+        `/students/dashboards/${dashboardId}/failedanswers`
+      )
+      .then((response) => {
+        return response.data.map((failedAnswer: any) => {
+          return new FailedAnswer(failedAnswer);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async updateFailedAnswers(dashboardId: number): Promise<void> {
+    return httpClient
+      .put(
+        `/students/dashboards/${dashboardId}/failedanswers`      
+      )
+      .then((response) => {
+        return;
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  
+  static async deleteFailedAnswers(failedAnswerId: number): Promise<void> {
+    return httpClient
+      .delete(
+        `/students/failedanswers/${failedAnswerId}`
+      )
+      .then((response) => {
+        return;
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
 
   // Questions Controller
 

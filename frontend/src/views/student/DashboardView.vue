@@ -42,6 +42,11 @@
       <global-stats-view></global-stats-view>
     </div>
 
+    <div v-if="show === 'Failed'" class="stats-container">
+      <failed-answers-view :dashboardId="dashboard.id" :lastCheckFailedAnswers="lastCheckFailedAnswers" v-on:refresh="onFailedAnswersRefresh">
+      </failed-answers-view>
+    </div>
+
 
   </div>
 </template>
@@ -51,9 +56,10 @@ import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import GlobalStatsView from '@/views/student/GlobalStatsView.vue';
 import Dashboard from '@/models/dashboard/Dashboard';
+import FailedAnswersView from '@/views/student/FailedAnswersView.vue';
 
 @Component({
-  components: { GlobalStatsView },
+  components: { GlobalStatsView, FailedAnswersView },
 })
 export default class StatsView extends Vue {
   dashboard: Dashboard | null = null;
