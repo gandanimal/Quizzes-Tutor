@@ -57,6 +57,7 @@ import RemoteServices from '@/services/RemoteServices';
 import GlobalStatsView from '@/views/student/GlobalStatsView.vue';
 import Dashboard from '@/models/dashboard/Dashboard';
 import FailedAnswersView from '@/views/student/FailedAnswersView.vue';
+import { ISOtoString } from '@/services/ConvertDateService';
 
 @Component({
   components: { GlobalStatsView, FailedAnswersView },
@@ -75,5 +76,25 @@ export default class StatsView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
+  async onFailedAnswersRefresh() {
+    await this.$store.dispatch("loading");
+    if(this.dashboard) {
+      try {
+        this.dashboard.lastCheckFailedAnswers = this.getCurrentDate();
+      } 
+      catch (error){
+        await this.$store.dispatch("error", error);
+      }
+      await this.$store.dispatch("clearLoading");
+    }
+  }
+
+  getCurrentDate(): string {
+    const date = Date.now().toString();
+    return ISOtoString(date);
+  }
+
 }
+
+
 </script>

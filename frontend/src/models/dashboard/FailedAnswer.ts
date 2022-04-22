@@ -13,8 +13,12 @@ export default class FailedAnswer {
             this.id = jsonObj.id;
             if(jsonObj.collected)
                 this.collected = ISOtoString(jsonObj.collected);
-            if(jsonObj.answered)
-                this.answered = jsonObj.answered;
+            if(jsonObj.answered) {
+                this.answered = "Yes";
+            }
+            else if(!jsonObj.answered) {
+                    this.answered = "No";
+            }
             this.questionAnswerDto = jsonObj.questionAnswerDto;
             this.content = this.questionAnswerDto.question.content;
         }
