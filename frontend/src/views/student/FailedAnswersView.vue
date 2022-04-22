@@ -21,7 +21,7 @@
               class="mr-2 action-button"
               v-on="on"
               data-cy="deleteQuestionButton"
-              @click="this.delete(item.id)"
+              @click="deleteFailedAnswer(item)"
               color="red"
             >delete</v-icon> 
           </template>
@@ -94,7 +94,7 @@ export default class FailedAnswersView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  async delete(deleteFailedAnswer: FailedAnswers) {
+  async deleteFailedAnswer(deleteFailedAnswer: FailedAnswers) {
     await this.$store.dispatch('loading');
     try{
       await RemoteServices.deleteFailedAnswers(deleteFailedAnswer.id);
