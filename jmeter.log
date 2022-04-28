@@ -1,0 +1,44 @@
+2022-04-19 11:49:03,223 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2022-04-19 11:49:03,397 INFO o.a.j.JMeter: Loading user properties from: /home/joao/bin/apache-jmeter-5.4.3/bin/user.properties
+2022-04-19 11:49:03,417 INFO o.a.j.JMeter: Loading system properties from: /home/joao/bin/apache-jmeter-5.4.3/bin/system.properties
+2022-04-19 11:49:03,458 INFO o.a.j.JMeter: Copyright (c) 1998-2021 The Apache Software Foundation
+2022-04-19 11:49:03,460 INFO o.a.j.JMeter: Version 5.4.3
+2022-04-19 11:49:03,461 INFO o.a.j.JMeter: java.version=11.0.14
+2022-04-19 11:49:03,461 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2022-04-19 11:49:03,461 INFO o.a.j.JMeter: os.name=Linux
+2022-04-19 11:49:03,461 INFO o.a.j.JMeter: os.arch=amd64
+2022-04-19 11:49:03,461 INFO o.a.j.JMeter: os.version=5.4.0-104-generic
+2022-04-19 11:49:03,461 INFO o.a.j.JMeter: file.encoding=UTF-8
+2022-04-19 11:49:03,462 INFO o.a.j.JMeter: java.awt.headless=null
+2022-04-19 11:49:03,462 INFO o.a.j.JMeter: Max memory     =1073741824
+2022-04-19 11:49:03,462 INFO o.a.j.JMeter: Available Processors =4
+2022-04-19 11:49:03,503 INFO o.a.j.JMeter: Default Locale=English (EN)
+2022-04-19 11:49:03,504 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2022-04-19 11:49:03,504 INFO o.a.j.JMeter: JMeterHome=/home/joao/bin/apache-jmeter-5.4.3
+2022-04-19 11:49:03,505 INFO o.a.j.JMeter: user.dir  =/home/joao/Desktop/es22-44
+2022-04-19 11:49:03,505 INFO o.a.j.JMeter: PWD       =/home/joao/Desktop/es22-44
+2022-04-19 11:49:03,505 INFO o.a.j.JMeter: IP: 127.0.1.1 Name: PC-JOAO FullName: PC-JOAO
+2022-04-19 11:49:04,290 INFO o.a.j.JMeter: Setting LAF to: com.github.weisj.darklaf.DarkLaf:com.github.weisj.darklaf.theme.DarculaTheme
+2022-04-19 11:49:06,048 INFO o.a.j.JMeter: Loaded icon properties from org/apache/jmeter/images/icon.properties
+2022-04-19 11:49:30,412 INFO o.a.j.s.FileServer: Default base='/home/joao/Desktop/es22-44'
+2022-04-19 11:49:30,440 INFO o.a.j.g.a.Load: Loading file: /home/joao/Desktop/es22-44/backend/jmeter/dashboard/DifficultQuestion.jmx
+2022-04-19 11:49:30,440 INFO o.a.j.s.FileServer: Set new base='/home/joao/Desktop/es22-44/backend/jmeter/dashboard'
+2022-04-19 11:49:30,808 INFO o.a.j.s.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2
+2022-04-19 11:49:30,885 INFO o.a.j.s.SaveService: Using SaveService properties version 5.0
+2022-04-19 11:49:30,893 INFO o.a.j.s.SaveService: Using SaveService properties file encoding UTF-8
+2022-04-19 11:49:30,905 INFO o.a.j.s.SaveService: Loading file: /home/joao/Desktop/es22-44/backend/jmeter/dashboard/DifficultQuestion.jmx
+2022-04-19 11:49:31,030 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/html is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2022-04-19 11:49:31,031 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xhtml+xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2022-04-19 11:49:31,031 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2022-04-19 11:49:31,031 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2022-04-19 11:49:31,032 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/vnd.wap.wml is org.apache.jmeter.protocol.http.parser.RegexpHTMLParser
+2022-04-19 11:49:31,032 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/css is org.apache.jmeter.protocol.http.parser.CssParser
+2022-04-19 11:49:31,548 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
+2022-04-19 11:49:31,553 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to ISO-8859-1
+2022-04-19 11:49:31,554 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
+2022-04-19 11:49:31,554 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
+2022-04-19 11:49:31,898 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2022-04-19 11:49:32,486 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2022-04-19 11:49:32,672 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2022-04-19 11:49:33,070 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2022-04-19 11:49:33,210 INFO o.a.j.s.FileServer: Set new base='/home/joao/Desktop/es22-44/backend/jmeter/dashboard'

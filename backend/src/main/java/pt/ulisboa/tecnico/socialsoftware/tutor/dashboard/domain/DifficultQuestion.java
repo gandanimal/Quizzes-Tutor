@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard.domain;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
@@ -47,14 +46,13 @@ public class DifficultQuestion implements DomainEntity {
         setRemoved(false);
         setQuestion(question);
         setDashboard(dashboard);
+
     }
 
     public void remove() {
-        if (!removed) {
+        if (removed && removedDate.isAfter(DateHandler.now().minusDays(7))) {
             throw new TutorException(ErrorMessage.CANNOT_REMOVE_DIFFICULT_QUESTION);
-        } else if (removedDate.isBefore(DateHandler.now().minusDays(7))) {
-            throw new TutorException(ErrorMessage.CANNOT_REMOVE_DIFFICULT_QUESTION);
-        };
+        }
 
         dashboard.getDifficultQuestions().remove(this);
         dashboard = null;
@@ -86,6 +84,10 @@ public class DifficultQuestion implements DomainEntity {
     }
 
     public void setRemoved(boolean removed) {
+        if (this.removed) {
+            throw new TutorException(ErrorMessage.CANNOT_REMOVE_DIFFICULT_QUESTION);
+        }
+
         this.removed = removed;
     }
 
@@ -104,7 +106,7 @@ public class DifficultQuestion implements DomainEntity {
     public void setQuestion(Question question) {
         this.question = question;
     }
-    
+
     public void update() {
         this.setPercentage(this.getQuestion().getDifficulty());
     }
@@ -112,10 +114,6 @@ public class DifficultQuestion implements DomainEntity {
     @Override
     public void accept(Visitor visitor) {
         // TODO Auto-generated method stub
-    }
-
-    public QuestionDto getQuestionDto(){
-        return new QuestionDto(question);
     }
 
     @Override
@@ -127,4 +125,5 @@ public class DifficultQuestion implements DomainEntity {
                 ", question=" + question +
                 "}";
     }
+
 }

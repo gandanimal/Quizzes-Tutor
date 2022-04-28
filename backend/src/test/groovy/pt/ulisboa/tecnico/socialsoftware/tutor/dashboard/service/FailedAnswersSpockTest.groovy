@@ -15,7 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler
 
-import java.time.DataHandler
+import java.time.LocalDateTime
 
 class FailedAnswersSpockTest extends SpockTest {
 
@@ -70,7 +70,7 @@ class FailedAnswersSpockTest extends SpockTest {
         return quizQuestion
     }
 
-    def answerQuiz(answered, correct, completed, question, quiz, date = DataHandler.now()) {
+    def answerQuiz(answered, correct, completed, question, quiz, date = LocalDateTime.now()) {
         def quizAnswer = new QuizAnswer()
         quizAnswer.setCompleted(completed)
         quizAnswer.setCreationDate(date)

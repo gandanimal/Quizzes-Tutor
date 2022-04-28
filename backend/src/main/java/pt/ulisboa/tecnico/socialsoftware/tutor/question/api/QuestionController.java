@@ -78,7 +78,7 @@ public class QuestionController {
     }
 
     @GetMapping("/questions/{questionId}/statement")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    
     public StatementQuestionDto getStatementQuestion(@PathVariable Integer questionId) {
         return this.questionService.getStatementQuestionDto(questionId);
     }

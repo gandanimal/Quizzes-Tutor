@@ -437,6 +437,8 @@ Cypress.Commands.add(
       '.datetimepicker > .datepicker > .datepicker-buttons-container > .datepicker-button > .datepicker-button-content'
     ).first().click();
 
+    cy.get('[data-cy="searchField"]').type(questionTitle);
+
     cy.contains(questionTitle)
       .parent()
       .should('have.length', 1)
@@ -445,6 +447,9 @@ Cypress.Commands.add(
       .should('have.length', 3)
       .find('[data-cy="addToQuizButton"]')
       .click();
+
+    cy.get('[data-cy="searchField"]').clear();
+    cy.get('[data-cy="searchField"]').type(questionTitle2);
 
     cy.contains(questionTitle2)
       .parent()
@@ -459,21 +464,48 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('solveQuizz', (quizTitle, numberOfQuizQuestions) => {
+Cypress.Commands.add('solveQuizz', (quizTitle, numberOfQuizQuestions, opt) => {
   cy.get('[data-cy="quizzesStudentMenuButton"]').click();
   cy.contains('Available').click();
 
   cy.contains(quizTitle).click();
 
   for (let i = 1; i < numberOfQuizQuestions; i++) {
-    cy.get('[data-cy="optionList"]').children().eq(1).click();
+    if(opt) {
+      cy.get('[data-cy="optionList"]').children().contains(opt).click();
+    }
+    else {
+      cy.get('[data-cy="optionList"]').children().eq(1).click();
+    }
     cy.get('[data-cy="nextQuestionButton"]').click();
   }
 
-  cy.get('[data-cy="optionList"]').children().eq(0).click();
+  if(opt) {
+    cy.get('[data-cy="optionList"]').children().contains(opt).click();
+  }
+  else {
+    cy.get('[data-cy="optionList"]').children().eq(0).click();
+  }
 
   cy.get('[data-cy="endQuizButton"]').click();
   cy.get('[data-cy="confirmationButton"]').click();
+});
+
+Cypress.Commands.add('solveDQuizz', (quizTitle, numberOfQuizQuestions) => {
+    cy.get('[data-cy="quizzesStudentMenuButton"]').click();
+    cy.contains('Available').click();
+
+    cy.contains(quizTitle).click();
+
+    for (let i = 1; i < numberOfQuizQuestions; i++) {
+        cy.get('[data-cy="optionList"]').children().contains("ChooseThisWrong").click();
+        cy.get('[data-cy="nextQuestionButton"]').click();
+    }
+
+    cy.get('[data-cy="optionList"]').children().contains("ChooseThisWrong").click();
+
+    cy.get('[data-cy="endQuizButton"]').click();
+    cy.get('[data-cy="confirmationButton"]').click();
 });
 
 Cypress.Commands.add('createDiscussion', (discussionContent) => {

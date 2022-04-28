@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.dashboard;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +16,20 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
-
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
 public class DifficultQuestionService {
@@ -50,85 +57,76 @@ public class DifficultQuestionService {
     public void removeDifficultQuestion(int difficultQuestionId) {
         DifficultQuestion difficultQuestion = difficultQuestionRepository.findById(difficultQuestionId).orElseThrow(() -> new TutorException(DIFFICULT_QUESTION_NOT_FOUND, difficultQuestionId));
 
-        if(difficultQuestion.isRemoved()){
-            throw new TutorException(ErrorMessage.CANNOT_REMOVE_DIFFICULT_QUESTION);
-        }else{
-            difficultQuestion.setRemoved(true);
-            difficultQuestion.setRemovedDate(DateHandler.now());
-        }
+        difficultQuestion.setRemoved(true);
+        difficultQuestion.setRemovedDate(DateHandler.now());
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public List<DifficultQuestionDto> getDifficultQuestions(int dashboardId) {
-        Dashboard dashboard = dashboardRepository.findById(dashboardId).orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
-        List < DifficultQuestionDto > dq = new ArrayList< DifficultQuestionDto >();
-        List<DifficultQuestion> difficultQuestionList = new ArrayList<>(dashboard.getDifficultQuestions());
-        for (DifficultQuestion d : difficultQuestionList){
-            if(!d.isRemoved()){
-                dq.add(new DifficultQuestionDto(d));
-            }
-        }
-        return dq;
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void updateDifficultQuestions(int dashboardId){
         Dashboard dashboard = dashboardRepository.findById(dashboardId).orElseThrow(() -> new TutorException(ErrorMessage.DASHBOARD_NOT_FOUND, dashboardId));
 
-        for (Question q: questionRepository.findQuestions(dashboard.getCourseExecution().getId())) {
-            int numberOfCorrect=0;
-            int numberOfAnswers=0;
+        return dashboard.getDifficultQuestions().stream()
+                .filter(Predicate.not(DifficultQuestion::isRemoved))
+                .map(DifficultQuestionDto::new)
+                .collect(Collectors.toList());
+    }
 
-            for(QuizQuestion QQ: q.getQuizQuestions()){
-                for(QuestionAnswer QA: QQ.getQuestionAnswers()) {
-                    if (QA.getQuizAnswer().getAnswerDate().isAfter(DateHandler.now().minusDays(7))){
-                        numberOfAnswers++;
-                        if (QA.isCorrect()) {
-                            numberOfCorrect++;
-                        }
-                    }
-                }
-            }
-            q.setNumberOfAnswers(numberOfAnswers);
-            q.setNumberOfCorrect(numberOfCorrect);
-        }
-
-        for (DifficultQuestion dq: difficultQuestionRepository.findAll()) {
-            if(dq.getQuestion().getDifficulty()!=null){
-                dq.update();
-            }
-            if(!dq.isRemoved()){
-                removeDifficultQuestion(dq.getId());
-            }
-            dq.remove();
-        }
-
-        for (Question q: questionRepository.findQuestions(dashboard.getCourseExecution().getId())) {
-            int id = q.getId();
-            int percentage=100;
-            boolean dqisCreated = false;
-
-            if (q.getDifficulty()!=null){
-                percentage=q.getDifficulty();
-            }
-
-            //List<DifficultQuestion> list = difficultQuestionRepository.findAll();
-            //for (DifficultQuestion dq: list){
-            //    if (dq.getQuestion().getId() == id) {
-            //        dqisCreated = true;
-            //        break;
-            //    }
-            //}
-
-            if (!(dqisCreated)){
-                if (percentage<=24) {
-                    DifficultQuestion difficultQuestion = new DifficultQuestion(dashboard, q, percentage);
-                    difficultQuestionRepository.save(difficultQuestion);
-                }
-            }
-        }
+    @Retryable(
+            value = {SQLException.class},
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void updateDifficultQuestions(int dashboardId) {
+        Dashboard dashboard = dashboardRepository.findById(dashboardId).orElseThrow(() -> new TutorException(ErrorMessage.DASHBOARD_NOT_FOUND, dashboardId));
 
         LocalDateTime now = DateHandler.now();
+
+        Set<DifficultQuestion> questionsToRemove = dashboard.getDifficultQuestions().stream()
+                .filter(difficultQuestion -> !difficultQuestion.isRemoved() ||
+                        (difficultQuestion.isRemoved() && difficultQuestion.getRemovedDate().plusDays(7).isBefore((now))))
+                .collect(Collectors.toSet());
+
+        questionsToRemove.forEach(difficultQuestion -> {
+            difficultQuestion.remove();
+            difficultQuestionRepository.delete(difficultQuestion);
+        });
+
+        Set<Question> questionsToPersist = dashboard.getDifficultQuestions().stream()
+                .map(DifficultQuestion::getQuestion)
+                .collect(Collectors.toSet());
+
+        dashboard.getCourseExecution().getQuizzes().stream()
+                .filter(quiz -> quiz.getResultsDate() == null || quiz.getResultsDate().isAfter(now.minusDays(7)))
+                .flatMap(quiz -> quiz.getQuizQuestions().stream()
+                        .map(QuizQuestion::getQuestion))
+                .distinct()
+                .filter(question -> !questionsToPersist.contains(question))
+                .forEach(question -> {
+                    int percentageCorrect = percentageCorrect(question, now.minusDays(7));
+                    if (percentageCorrect < 25) {
+                        DifficultQuestion difficultQuestion = new DifficultQuestion(dashboard, question, percentageCorrect);
+                        difficultQuestionRepository.save(difficultQuestion);
+                    }
+                });
+
         dashboard.setLastCheckDifficultQuestions(now);
+    }
+
+    private int percentageCorrect(Question question, LocalDateTime weekAgo) {
+        Set<QuestionAnswer> answersInWeek = question.getQuizQuestions().stream()
+                .flatMap(quizQuestion -> quizQuestion.getQuestionAnswers().stream())
+                .filter(questionAnswer -> questionAnswer.getQuizAnswer().getAnswerDate().isAfter(weekAgo))
+                .collect(Collectors.toSet());
+
+        int totalAnswers = answersInWeek.size();
+
+        if (totalAnswers == 0) {
+            return 100;
+        }
+
+        int correctAnswers = (int) answersInWeek.stream()
+                .filter(QuestionAnswer::isCorrect)
+                .count();
+
+        return (correctAnswers * 100) / totalAnswers;
     }
 }

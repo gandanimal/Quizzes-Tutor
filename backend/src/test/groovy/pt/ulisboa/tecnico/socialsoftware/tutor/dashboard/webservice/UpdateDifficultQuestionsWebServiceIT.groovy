@@ -104,7 +104,7 @@ class UpdateDifficultQuestionsWebServiceIT extends SpockTest {
         then:
         response.status == 200
         and:
-        DifficultQuestionRepository.findAll().size() == 1
+        difficultQuestionRepository.findAll().size() == 1
     }
 
     def "teacher cant update student's difficult questions"() {

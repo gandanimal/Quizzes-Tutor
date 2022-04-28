@@ -249,6 +249,7 @@
             label="Search"
             single-line
             hide-details
+            data-cy="searchField"
           ></v-text-field>
           <v-spacer></v-spacer>
           <v-btn

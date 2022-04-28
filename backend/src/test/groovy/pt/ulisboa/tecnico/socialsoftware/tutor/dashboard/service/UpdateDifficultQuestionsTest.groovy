@@ -155,7 +155,7 @@ class UpdateDifficultQuestionsTest extends SpockTest {
         then:
         difficultQuestionRepository.count() == 0L
     }
-/*
+
     @Unroll
     def "does not delete removed difficult question that was removed in less than #daysAgo days ago"() {
         given:
@@ -285,7 +285,7 @@ class UpdateDifficultQuestionsTest extends SpockTest {
         result.getQuestion() == question
         result.getPercentage() == 0
     }
-*/
+
     @Unroll
     def "question is correctly computed as not difficulty with #numberOfIncorrect incorrect"() {
         given:

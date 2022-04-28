@@ -26,7 +26,9 @@ import QuestionQuery from '@/models/management/QuestionQuery';
 import { FraudScores } from '@/models/management/fraud/FraudScores';
 import { QuizFraudInformation } from '@/models/management/fraud/QuizFraudInformation';
 import Dashboard from "@/models/dashboard/Dashboard";
+import DifficultQuestion from '@/models/dashboard/DifficultQuestion';
 import FailedAnswer from "@/models/dashboard/FailedAnswer";
+import WeeklyScore from '@/models/dashboard/WeeklyScore';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 100000;
@@ -186,6 +188,41 @@ export default class RemoteServices {
       });
   }
 
+  static async getDifficultQuestions(dashboardId: number): Promise<DifficultQuestion[]> {
+    return httpClient
+      .get(`/students/dashboards/difficultQuestion/${dashboardId}`)
+      .then((response) => {
+        return response.data.map((difficultQuestion: any) => {
+          return new DifficultQuestion(difficultQuestion);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async updateDifficultQuestions(dashboardId: number): Promise<void> {
+    return httpClient
+        .put(`/students/dashboards/difficultQuestion/${dashboardId}`)
+        .then((response) => {
+          return;
+        })
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async removeDifficultQuestions(id: number): Promise<void> {
+    return httpClient
+        .delete(`/students/difficultQuestions/${id}`)
+        .then((response) => {
+          return;
+        })
+        .catch(async (error) => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+  
   static async getUserStats(): Promise<StudentStats> {
     return httpClient
       .get(
@@ -199,6 +236,48 @@ export default class RemoteServices {
       });
   }
 
+  // Weekly Scores Controller
+
+  static async getWeeklyScores(dashboardId: number): Promise<WeeklyScore[]> {
+    return httpClient
+      .get(
+        `/students/dashboards/${dashboardId}/weeklyscores`
+      )
+      .then((response) => {
+        return response.data.map((weeklyscore: any) => {
+          return new WeeklyScore(weeklyscore);
+        });
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async updateWeeklyScores(dashboardId: number): Promise<void> {
+    return httpClient
+      .put(
+        `/students/dashboards/${dashboardId}/weeklyscores`
+      )
+      .then((response) => {
+        return;
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async deleteWeeklyScores(weeklyScoreId: number): Promise<void> {
+    return httpClient
+      .delete(
+        `/students/weeklyscores/${weeklyScoreId}`
+      )
+      .then((response) => {
+        return;
+      })
+      .catch(async (error) => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
   // FailedAnswers Controller
 
   static async getFailedAnswers(dashboardId: number): Promise<FailedAnswer[]> {
@@ -219,7 +298,7 @@ export default class RemoteServices {
   static async updateFailedAnswers(dashboardId: number): Promise<void> {
     return httpClient
       .put(
-        `/students/dashboards/${dashboardId}/failedanswers`      
+        `/students/dashboards/${dashboardId}/failedanswers`
       )
       .then((response) => {
         return;
@@ -229,7 +308,7 @@ export default class RemoteServices {
       });
   }
 
-  
+
   static async deleteFailedAnswers(failedAnswerId: number): Promise<void> {
     return httpClient
       .delete(
@@ -282,9 +361,7 @@ export default class RemoteServices {
       .then((response) => {
         return new StatementQuestion(response.data);
       })
-      .catch(async (error) => {
-        throw Error(await this.errorMessage(error));
-      });
+
   }
 
   static async exportCourseQuestions(): Promise<Blob> {
@@ -1188,7 +1265,7 @@ export default class RemoteServices {
     return httpClient
       .put(
         `tournaments/${Store.getters.getCurrentCourse.courseExecutionId}/joinTournament/${tournamentId}?password=` +
-          password
+            password
       )
       .catch(async (error) => {
         throw Error(await this.errorMessage(error));

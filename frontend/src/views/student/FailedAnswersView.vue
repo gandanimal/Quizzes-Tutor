@@ -5,6 +5,7 @@
         <v-btn
             color="primary"
             v-on:click="this.update"
+            data-cy="RefreshFailedAnswersButton"
           >Refresh</v-btn>
     </v-card-title>
     <v-data-table
@@ -20,7 +21,7 @@
             <v-icon
               class="mr-2 action-button"
               v-on="on"
-              data-cy="deleteQuestionButton"
+              data-cy="DeleteFailedAnswerButton"
               @click="deleteFailedAnswer(item)"
               color="red"
             >delete</v-icon> 
@@ -60,7 +61,7 @@ export default class FailedAnswersView extends Vue {
     },
     {
       text: 'Answered',
-      value: 'answered',
+      value: 'answereds',
       width: '5px',
       align: 'center',
       sortable: false,
