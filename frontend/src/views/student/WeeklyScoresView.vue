@@ -10,6 +10,7 @@
             style="margin-top: 10px"
             color="primary"
             v-on:click="this.refresh"
+            data-cy="refreshWeeklyScoreButton"
             >Refresh
           </v-btn>
         </v-col>
@@ -27,7 +28,7 @@
               <v-icon
                 class="mr-2 action-button"
                 v-on="on"
-                data-cy="deleteQWeeklyScoreButton"
+                data-cy="deleteWeeklyScoreButton"
                 @click="remove(item)"
                 color="red"
                 >delete
@@ -40,8 +41,6 @@
     </v-card>
   </div>
 </template>
-
-
 
 <script lang="ts">
 import WeeklyScore from '@/models/dashboard/WeeklyScore';
@@ -63,7 +62,7 @@ export default class WeeklyScoresView extends Vue {
           value: 'action',
         },
         { text: 'Week', value: 'week' },
-        { text: 'Number Answered', value: 'numbersAnswered' },
+        { text: 'Number Answered', value: 'numberAnswered' },
         { text: 'Uniquely Answered', value: 'uniquelyAnswered' },
         { text: 'Percentage Correct', value: 'percentageCorrect' },
       ],
